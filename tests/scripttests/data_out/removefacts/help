@@ -1,0 +1,37 @@
+usage: removefacts [-h] [-ss SOURCE SYSTEM CODE]
+                   [-u [UPLOAD IDENTIFIER [UPLOAD IDENTIFIER ...]]]
+                   [--conf CONFIG FILE] [-db DBURL] [--user USER]
+                   [--password PASSWORD] [--crcdb CRCDB] [--crcuser CRCUSER]
+                   [--crcpassword CRCPASSWORD] [--ontodb ONTODB]
+                   [--ontouser ONTOUSER] [--ontopassword ONTOPASSWORD]
+                   [--onttable ONTOLOGY TABLE NAME] [-p SS PREFIX]
+                   [--testlist] [--removetestlist]
+
+Clear data from FHIR observation fact table
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -ss SOURCE SYSTEM CODE, --sourcesystem SOURCE SYSTEM CODE
+                        Sourcesystem code
+  -u [UPLOAD IDENTIFIER [UPLOAD IDENTIFIER ...]], --uploadid [UPLOAD IDENTIFIER [UPLOAD IDENTIFIER ...]]
+                        Upload identifer -- uniquely identifies this batch
+  --conf CONFIG FILE    Configuration file
+  -db DBURL, --dburl DBURL
+                        Default database URL
+  --user USER           Default user name
+  --password PASSWORD   Default password
+  --crcdb CRCDB         CRC database URL. (default: dburl)
+  --crcuser CRCUSER     User name for CRC database. (default: user)
+  --crcpassword CRCPASSWORD
+                        Password for CRC database. (default: password)
+  --ontodb ONTODB       Ontology database URL. (default: dburl)
+  --ontouser ONTOUSER   User name for ontology database. (default: user)
+  --ontopassword ONTOPASSWORD
+                        Password for ontology database. (default: password)
+  --onttable ONTOLOGY TABLE NAME
+                        Ontology table name (default: custom_meta)
+  -p SS PREFIX, --testprefix SS PREFIX
+                        Sourcesystem_cd prefix for test suite functions
+                        (Default: test_i2b2model_
+  --testlist            List leftover test suite entries
+  --removetestlist      Remove leftover test suite entries

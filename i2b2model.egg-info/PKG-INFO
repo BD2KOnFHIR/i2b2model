@@ -1,0 +1,17 @@
+Metadata-Version: 1.1
+Name: i2b2model
+Version: 0.1.0
+Summary: i2b2 Model Wrapper
+Home-page: https://github.com/BD2KOnFHIR/i2b2model
+Author: Harold Solbrig
+Author-email: solbrig.harold@mayo.edu
+License: Apache 2.0
+Description-Content-Type: UNKNOWN
+Description: Representation of i2b2 model for Python based loading and manipulation
+Platform: UNKNOWN
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Topic :: Database
+Classifier: Programming Language :: Python :: 3.6
