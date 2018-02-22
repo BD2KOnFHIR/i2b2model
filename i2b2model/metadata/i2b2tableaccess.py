@@ -27,7 +27,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional
 
-from i2b2model.metadata.i2b2ontologyquery import ConceptQuery
+from i2b2model.metadata.i2b2ontologyquery import ConceptQuery, Query
 from i2b2model.metadata.i2b2ontologyvisualattributes import VisualAttributes
 from i2b2model.shared.tablenames import i2b2tablenames
 from i2b2model.sqlsupport.dynobject import DynObject, DynElements
@@ -37,14 +37,17 @@ class TableAccess(DynObject):
     _t = DynElements(DynObject)
     _visualattributes = VisualAttributes("CA")
 
-    def __init__(self, table_cd: str) -> None:
-        self._table_cd = table_cd
-        self._fullname = f"\\{table_cd}\\"
-        self._query = ConceptQuery(self._fullname)
+    def __init__(self, table_cd: str, fullname: Optional[str]=None, query: Optional[Query]=None,
+                 hlevel: Optional[int]=None, name: Optional[str]=None) -> None:
+        self._c_table_cd = table_cd
+        self._c_fullname = fullname if fullname else f"\\{table_cd}\\"
+        self._query = query if query else ConceptQuery(self._c_fullname)
+        self._c_hlevel = hlevel if hlevel is not None else 1
+        self._c_name = name if name else f"{self._c_table_cd} Resources"
 
     @DynObject.entry(_t)
     def c_table_cd(self) -> str:
-        return self._table_cd
+        return self._c_table_cd
 
     @DynObject.entry(_t)
     def c_table_name(self) -> str:
@@ -56,15 +59,15 @@ class TableAccess(DynObject):
 
     @DynObject.entry(_t)
     def c_hlevel(self) -> int:
-        return 1
+        return self._c_hlevel
 
     @DynObject.entry(_t)
     def c_fullname(self) -> str:
-        return self._fullname
+        return self._c_fullname
 
     @DynObject.entry(_t)
     def c_name(self) -> str:
-        return f"{self._table_cd} Resources"
+        return self._c_name
 
     @DynObject.entry(_t)
     def c_synonym_cd(self) -> str:

@@ -8,6 +8,8 @@ Python tools for working with the i2b2 data model
 
 ## Edit history
 * 0.1.0 - Initial commit.  Parted from the [i2FHIRb2](https://github.com/BD2KONFHIR/i2FHIRb2/) module
+* 0.1.1 - Added hlevel bias and ability to explicitly set c_name in OntologyEntry
+* 0.1.2 - Added more options to TableAccess to support i2b2terminology project
 
 ## Requirements
 1) Python 3.6 or later

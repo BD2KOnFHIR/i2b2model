@@ -33,8 +33,9 @@ from i2b2model.shared.tablenames import DEFAULT_ONTOLOGY_TABLE
 
 
 class TableAccessTestCase(unittest.TestCase):
-    def test(self):
+    def test_fhir(self):
         from i2b2model.metadata.i2b2tableaccess import TableAccess
+        TableAccess._clear()
         ta = TableAccess('FHIR')
         self.assertEqual(('c_table_cd\tc_table_name\tc_protected_access\tc_hlevel\tc_fullname\tc_name\t'
                           'c_synonym_cd\tc_visualattributes\tc_totalnum\tc_basecode\tc_metadataxml\t'
@@ -61,6 +62,38 @@ class TableAccessTestCase(unittest.TestCase):
              ('c_dimcode', '\\FHIR\\'),
              ('c_comment', None),
              ('c_tooltip', 'FHIR Resources'),
+             ('c_entry_date', None),
+             ('c_change_date', None),
+             ('c_status_cd', None),
+             ('valuetype_cd', None)]), ta._freeze())
+
+    def test_general(self):
+        from i2b2model.metadata.i2b2tableaccess import TableAccess
+        from i2b2model.metadata.i2b2ontologyquery import Query
+
+        TableAccess._clear()
+        q = Query('ITCP_EVENTS', 'concept_cd', False, 'C_FULLNAME', '=', '\\SCT\\276746005')
+        ta = TableAccess('SCT_ENV_EVENT', '\\SCT\\276746005\\', q, 2, 'Environmental event (event)')
+        self.assertEqual(OrderedDict([
+             ('c_table_cd', 'SCT_ENV_EVENT'),
+             ('c_table_name', 'custom_meta'),
+             ('c_protected_access', 'N'),
+             ('c_hlevel', 2),
+             ('c_fullname', '\\SCT\\276746005\\'),
+             ('c_name', 'Environmental event (event)'),
+             ('c_synonym_cd', 'N'),
+             ('c_visualattributes', 'CA '),
+             ('c_totalnum', None),
+             ('c_basecode', None),
+             ('c_metadataxml', None),
+             ('c_facttablecolumn', 'concept_cd'),
+             ('c_dimtablename', 'ITCP_EVENTS'),
+             ('c_columnname', 'C_FULLNAME'),
+             ('c_columndatatype', 'T'),
+             ('c_operator', '='),
+             ('c_dimcode', '\\SCT\\276746005'),
+             ('c_comment', None),
+             ('c_tooltip', 'Environmental event (event)'),
              ('c_entry_date', None),
              ('c_change_date', None),
              ('c_status_cd', None),

@@ -65,10 +65,12 @@ class OntologyEntry(I2B2Core):
         self._visualattributes = visualattributes if visualattributes else VisualAttributes()
         self._c_basecode = c_basecode
         self._modifier_exclusion = False
+        self._hlevel_bias = 0
+        self._c_name = None
 
     @DynObject.entry(_t)
     def c_hlevel(self) -> int:
-        return self.c_fullname[:-1].count('\\') - 1
+        return self.c_fullname[:-1].count('\\') - 1 + self._hlevel_bias
 
     @DynObject.entry(_t)
     def c_fullname(self) -> str:
@@ -76,7 +78,7 @@ class OntologyEntry(I2B2Core):
 
     @DynObject.entry(_t)
     def c_name(self) -> str:
-        return self.c_fullname[:-1].rsplit('\\', 1)[1]
+        return self.c_fullname[:-1].rsplit('\\', 1)[1] if not self._c_name else self._c_name
 
     @DynObject.entry(_t)
     def c_synonym_cd(self) -> str:
