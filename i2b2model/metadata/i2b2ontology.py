@@ -27,7 +27,7 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional
 
-from i2b2model.metadata.i2b2ontologyquery import Query
+from i2b2model.metadata.i2b2ontologyquery import Query, EmptyQuery
 from i2b2model.metadata.i2b2ontologyvisualattributes import VisualAttributes
 from i2b2model.shared.i2b2core import I2B2Core
 from i2b2model.sqlsupport.dynobject import DynElements, DynObject, DynamicPropType
@@ -162,3 +162,31 @@ class OntologyEntry(I2B2Core):
 
     def __eq__(self, other):
         return self.c_fullname + self.m_applied_path == other.c_fullname + self.m_applied_path
+
+
+class OntologyRoot(OntologyEntry):
+    _t = DynElements(OntologyEntry)
+
+    def __init__(self, base: str, **kwargs) -> None:
+        """ Root entry for a path in the Ontology file
+
+        :param base: Path base
+        :param kwargs: Additional arguments for i2b2_core
+        """
+        if base.startswith('\\'):
+            base = base[1:-1]
+        path = '\\' + base + '\\'
+        super().__init__(path, EmptyQuery(), VisualAttributes("CA"), sourcesystem_cd=base, **kwargs)
+        self._base = base
+
+    @DynObject.entry(_t)
+    def c_hlevel(self) -> int:
+        return 0
+
+    @DynObject.entry(_t)
+    def c_name(self) -> str:
+        return self._base
+
+    @DynObject.entry(_t)
+    def c_basecode(self) -> Optional[str]:
+        return self._base + ':'
