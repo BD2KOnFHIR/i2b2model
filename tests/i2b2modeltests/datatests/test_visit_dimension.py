@@ -30,6 +30,9 @@ import unittest
 from collections import OrderedDict
 from datetime import datetime
 
+from dynprops import as_dict
+
+from i2b2model.shared.i2b2core import I2B2CoreWithUploadId, I2B2Core
 from tests.utils.crc_testcase import CRCTestCase
 
 
@@ -37,11 +40,11 @@ class VisitDimensionTestCase(CRCTestCase):
 
     def test_basics(self):
         from i2b2model.data.i2b2visitdimension import VisitDimension, ActiveStatusCd
-        VisitDimension._clear()
-        VisitDimension.update_date = datetime(2017, 1, 3)
+
+        I2B2Core.update_date = datetime(2017, 1, 3)
         with self.sourcesystem_cd():
-            VisitDimension.upload_id = self._upload_id
-            VisitDimension.sourcesystem_cd = self._sourcesystem_cd
+            I2B2CoreWithUploadId.upload_id = self._upload_id
+            I2B2Core.sourcesystem_cd = self._sourcesystem_cd
             x = VisitDimension(500001, 10000017, ActiveStatusCd(ActiveStatusCd.sd_day,
                                                                 ActiveStatusCd.ed_ongoing), datetime(2007, 10, 4))
             self.assertEqual(OrderedDict([
@@ -59,7 +62,7 @@ class VisitDimensionTestCase(CRCTestCase):
                  ('download_date', datetime(2017, 1, 3, 0, 0)),
                  ('import_date', datetime(2017, 1, 3, 0, 0)),
                  ('sourcesystem_cd', self._sourcesystem_cd),
-                 ('upload_id', self._upload_id)]), x._freeze())
+                 ('upload_id', self._upload_id)]), as_dict(x))
 
 
 if __name__ == '__main__':

@@ -25,29 +25,17 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+from dynprops import Local, Parent
 
 from i2b2model.metadata.commondimension import CommonDimension
-from i2b2model.sqlsupport.dynobject import DynObject, DynElements
 
 
 class ConceptDimension(CommonDimension):
-    _t = DynElements(CommonDimension)
-
-    @DynObject.entry(_t)
-    def concept_path(self) -> str:
-        return self.path()
-
-    @DynObject.entry(_t)
-    def concept_cd(self) -> str:
-        return self.cd()
-
-    @DynObject.entry(_t)
-    def name_char(self) -> str:
-        return self.name_char_()
-
-    @DynObject.entry(_t)
-    def concept_blob(self) -> str:
-        return self.blob()
+    concept_path: Local[str] = lambda self: self.path()
+    concept_cd: Local[str] = lambda self: self.cd()
+    name_char: Local[str] = lambda self: self.name_char_()
+    concept_blob: Local[str] = lambda self: self.blob()
+    _: Parent
 
     def __lt__(self, other):
         return self.concept_path < other.concept_path

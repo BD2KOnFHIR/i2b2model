@@ -27,25 +27,44 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional
 
+from dynprops import Local, Parent
+
 from i2b2model.metadata.i2b2ontologyquery import Query, EmptyQuery
 from i2b2model.metadata.i2b2ontologyvisualattributes import VisualAttributes
 from i2b2model.shared.i2b2core import I2B2Core
-from i2b2model.sqlsupport.dynobject import DynElements, DynObject, DynamicPropType
 
 
 class OntologyEntry(I2B2Core):
-    _t = DynElements(I2B2Core)
-    ontology_name = "FHIR"
+    c_hlevel: Local[int] = lambda self: self.c_fullname[:-1].count('\\') - 1 + self._hlevel_bias
+    c_fullname: Local[str]
+    c_name: Local[str] = lambda self: self.c_fullname[:-1].rsplit('\\', 1)[1]
+    c_synonym_cd: Local[str] = "N"
+    c_visualattributes: Local[str] = VisualAttributes()
+    c_totalnum: Local[Optional[int]] = None
+    c_basecode: Local[str]
+    c_metadataxml: Local[Optional[str]] = None
+    c_facttablecolumn: Local[str] = lambda self: self._query.key
+    c_tablename: Local[str] = lambda self: self._query.table
+    c_columnname: Local[str] = lambda self: self._query.where_subj
+    c_columndatatype: Local[str] = lambda self: "N" if self._query.numeric_key else "T"
+    c_operator: Local[str] = lambda self: self._query.where_pred
+    c_dimcode: Local[str] = lambda self: self._query.where_obj
+    c_comment: Local[Optional[str]] = None
+    c_tooltip: Local[Optional[str]] = None
+    m_applied_path: Local[str] = '@'
+    _: Parent
+    valuetype_cd: Local[Optional[str]] = None
+    m_exclusion_cd: Local[Optional[str]] = lambda self: 'X' if self._modifier_exclusion else None
+    c_path: Local[Optional[str]] = None
+    c_symbol: Local[Optional[str]] = None
+
+    base: str = "BASE"
 
     def __init__(self,
                  c_full_name: str,
                  query: Query,
                  visualattributes: VisualAttributes = None,
-                 c_basecode: Optional[str]=None,
-                 update_date: Optional[DynamicPropType] = None,
-                 download_date: Optional[DynamicPropType] = None,
-                 sourcesystem_cd: Optional[DynamicPropType] = None,
-                 import_date: Optional[DynamicPropType] = None):
+                 c_basecode: Optional[str]=None):
         """
         Initialize an ontology entry.
 
@@ -53,109 +72,15 @@ class OntologyEntry(I2B2Core):
         :param query: Dimension table query for item
         :param visualattributes: VisualAttributes for item
         :param c_basecode: "uri" for item
-        :param update_date:
-        :param download_date:
-        :param sourcesystem_cd:
-        :param import_date:
         """
-        super().__init__(update_date, download_date, sourcesystem_cd, import_date)
+        super().__init__()
         assert(c_full_name.endswith('\\'))
-        self._c_fullname = c_full_name
+        self.c_fullname = c_full_name
         self._query = query
         self._visualattributes = visualattributes if visualattributes else VisualAttributes()
-        self._c_basecode = c_basecode
+        self.c_basecode = c_basecode
         self._modifier_exclusion = False
         self._hlevel_bias = 0
-        self._c_name = None
-
-    @DynObject.entry(_t)
-    def c_hlevel(self) -> int:
-        return self.c_fullname[:-1].count('\\') - 1 + self._hlevel_bias
-
-    @DynObject.entry(_t)
-    def c_fullname(self) -> str:
-        return self._c_fullname
-
-    @DynObject.entry(_t)
-    def c_name(self) -> str:
-        return self.c_fullname[:-1].rsplit('\\', 1)[1] if not self._c_name else self._c_name
-
-    @DynObject.entry(_t)
-    def c_synonym_cd(self) -> str:
-        """ Two or more synonyms of each other will have the same c_basecode """
-        return "N"
-
-    @DynObject.entry(_t)
-    def c_visualattributes(self) -> str:
-        return str(self._visualattributes)
-
-    @DynObject.entry(_t)
-    def c_totalnum(self) -> Optional[int]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_basecode(self) -> Optional[str]:
-        return self._c_basecode
-
-    @DynObject.entry(_t)
-    def c_metadataxml(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_facttablecolumn(self) -> str:
-        return self._query.key
-
-    @DynObject.entry(_t)
-    def c_tablename(self) -> str:
-        return self._query.table
-
-    @DynObject.entry(_t)
-    def c_columnname(self) -> str:
-        return self._query.where_subj
-
-    @DynObject.entry(_t)
-    def c_columndatatype(self) -> str:
-        return 'N' if self._query.numeric_key else 'T'
-
-    @DynObject.entry(_t)
-    def c_operator(self) -> str:
-        return self._query.where_pred
-
-    @DynObject.entry(_t)
-    def c_dimcode(self) -> str:
-        return self._query.where_obj
-
-    @DynObject.entry(_t)
-    def c_comment(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_tooltip(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def m_applied_path(self) -> str:
-        return '@'
-
-    DynObject._after_root(_t)
-
-    @DynObject.entry(_t)
-    def valuetype_cd(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def m_exclusion_cd(self) -> Optional[str]:
-        return 'X' if self._modifier_exclusion else None
-
-    @DynObject.entry(_t)
-    def c_path(self) -> Optional[str]:
-        # return self.basename[:-1].rsplit('\\', 1)[0]
-        return None
-
-    @DynObject.entry(_t)
-    def c_symbol(self) -> Optional[str]:
-        # return self.basename[:-1].rsplit('\\', 1)[1]
-        return None
 
     def __lt__(self, other):
         return self.c_fullname + self.m_applied_path < other.c_fullname + self.m_applied_path
@@ -164,29 +89,12 @@ class OntologyEntry(I2B2Core):
         return self.c_fullname + self.m_applied_path == other.c_fullname + self.m_applied_path
 
 
-class OntologyRoot(OntologyEntry):
-    _t = DynElements(OntologyEntry)
-
-    def __init__(self, base: str, **kwargs) -> None:
-        """ Root entry for a path in the Ontology file
-
-        :param base: Path base
-        :param kwargs: Additional arguments for i2b2_core
-        """
-        if base.startswith('\\'):
-            base = base[1:-1]
-        path = '\\' + base + '\\'
-        super().__init__(path, EmptyQuery(), VisualAttributes("CA"), sourcesystem_cd=base, **kwargs)
-        self._base = base
-
-    @DynObject.entry(_t)
-    def c_hlevel(self) -> int:
-        return 0
-
-    @DynObject.entry(_t)
-    def c_name(self) -> str:
-        return self._base
-
-    @DynObject.entry(_t)
-    def c_basecode(self) -> Optional[str]:
-        return self._base + ':'
+def OntologyRoot(base: str) -> OntologyEntry:
+    """ Return a root ontology entry """
+    if not base.startswith('\\'):
+        base = '\\' + base
+    if not base.endswith('\\'):
+        base = base + '\\'
+    rval = OntologyEntry(base, EmptyQuery(), VisualAttributes("CA"))
+    rval.c_name = base[1:-1]
+    return rval

@@ -1,4 +1,4 @@
-# Copyright (c) 2017, Mayo Clinic
+# Copyright (c) 2018, Mayo Clinic
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without modification,
@@ -25,44 +25,19 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-import unittest
-from collections import OrderedDict
-from datetime import datetime
 
-from dynprops import as_dict
+# Remove any facts that have been left as the result of unit tests.
+#
+#  This should be run before and after any unit tests until we get the SQL issue resolved
 
-from i2b2model.shared.i2b2core import I2B2Core
-from tests.utils.base_test_case import BaseTestCase
+import os
+import sys
 
+from tests.utils.crc_testcase import test_prefix
 
-class ModifierDimensionTestCase(BaseTestCase):
-    def setUp(self):
-        I2B2Core._clear()
+if __name__ == "__main__":
+    sys.path.append(os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), '..'))
+    from i2b2model.scripts.removefacts import remove_facts
 
-    def tearDown(self):
-        I2B2Core._clear()
-
-    def test_basics(self):
-        from i2b2model.metadata.i2b2modifierdimension import ModifierDimension
-
-        I2B2Core.download_date = datetime(2017, 5, 25)
-        I2B2Core.sourcesystem_cd = "MOD_TEST"
-        I2B2Core.import_date = datetime(2017, 5, 25)
-        md = ModifierDimension('MODTEST', 'baboon', 'Wild baboons', ['Earth', 'Africa', 'Zimbabwai'])
-        self.assertAlmostNow(md.update_date)
-        I2B2Core.update_date = datetime(2001, 12, 1)
-        expected = OrderedDict([
-             ('modifier_path', '\\Earth\\Africa\\Zimbabwai\\baboon\\'),
-             ('modifier_cd', 'MODTEST:baboon'),
-             ('name_char', 'MODTEST Wild baboons'),
-             ('modifier_blob', ''),
-             ('update_date', datetime(2001, 12, 1, 0, 0)),
-             ('download_date', datetime(2017, 5, 25, 0, 0)),
-             ('import_date', datetime(2017, 5, 25, 0, 0)),
-             ('sourcesystem_cd', 'MOD_TEST'),
-             ('upload_id', None)])
-        self.assertEqual(expected, as_dict(md))
-
-
-if __name__ == '__main__':
-    unittest.main()
+    conf_file_loc = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'conf', 'db_conf'))
+    remove_facts(f"--conf {conf_file_loc} -p {test_prefix} --removetestlist".split())

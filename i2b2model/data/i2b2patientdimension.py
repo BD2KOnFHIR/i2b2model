@@ -25,36 +25,12 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-
-# create table i2b2demodata.patient_dimension
-# (
-# 	patient_num integer not null
-# 		constraint patient_dimension_pk
-# 			primary key,
-# 	vital_status_cd varchar(50),
-# 	birth_date timestamp,
-# 	death_date timestamp,
-# 	sex_cd varchar(50),
-# 	age_in_years_num integer,
-# 	language_cd varchar(50),
-# 	race_cd varchar(50),
-# 	marital_status_cd varchar(50),
-# 	religion_cd varchar(50),
-# 	zip_cd varchar(10),
-# 	statecityzip_path varchar(700),
-# 	income_cd varchar(50),
-# 	patient_blob text,
-# 	update_date timestamp,
-# 	download_date timestamp,
-# 	import_date timestamp,
-# 	sourcesystem_cd varchar(50),
-# 	upload_id integer
-# )
 from datetime import datetime
 from typing import Optional, Tuple, List
 
+from dynprops import Local, Parent
+
 from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
-from i2b2model.sqlsupport.dynobject import DynElements, DynObject
 from i2b2model.sqlsupport.dbconnection import I2B2Tables
 
 
@@ -97,108 +73,38 @@ class VitalStatusCd:
     def code(self):
         return self.deathcode.code + self.birthcode.code
 
+    def reify(self):
+        return self.code
+
+unknown_vital_status_cd = VitalStatusCd(VitalStatusCd.bd_unknown, VitalStatusCd.dd_unknown)
 
 # TODO: should age be computed from birthdate / deathdate
 # TODO: language code -- what do we do with this?
 
 class PatientDimension(I2B2CoreWithUploadId):
-    _t = DynElements(I2B2CoreWithUploadId)
+    patient_num: Local[int]
+    vital_status_cd: Local[Optional[VitalStatusCd]]
+    birth_date: Local[Optional[datetime]]
+    death_date: Local[Optional[datetime]]
+    sex_cd: Local[Optional[str]]
+    age_in_years_num: Local[Optional[int]]
+    language_cd: Local[Optional[str]]
+    race_cd: Local[Optional[str]]
+    marital_status_cd: Local[Optional[str]]
+    religion_cd: Local[Optional[str]]
+    zip_cd: Local[Optional[str]]
+    statecityzip_path: Local[Optional[str]]
+    income_cd: Local[Optional[str]]
+    patient_blob: Local[Optional[str]]
+    _: Parent
 
     key_fields = ["patient_num"]
 
-    def __init__(self, patient_num, vital_status_cd: VitalStatusCd, **kwargs) -> None:
-        self._patient_num = patient_num
-        self._vital_status_code = vital_status_cd
-        self._birth_date = None
-        self._death_date = None
-        self._sex_cd = None
-        self._age_in_years_num = None
-        self._language_cd = None
-        self._race_cd = None
-        self._marital_status_cd = None
-        self._religion_cd = None
-        self._zip_cd = None
-        self._statecityzip_path = None
-        self._income_cd = None
-        self._patient_blob = None
-        super().__init__(**kwargs)
+    def __init__(self, patient_num, vital_status_cd: Optional[VitalStatusCd]=unknown_vital_status_cd) -> None:
+        self.patient_num = patient_num
+        self.vital_status_cd = vital_status_cd
 
-    @DynObject.entry(_t)
-    def patient_num(self) -> int:
-        """
-        Reference number for the patient
-        """
-        return self._patient_num
-
-    @DynObject.entry(_t)
-    def vital_status_cd(self) -> Optional[str]:
-        """
-        Encoded i2b2 patient visit number
-        """
-        return self._vital_status_code.code
-
-    @DynObject.entry(_t)
-    def birth_date(self) -> Optional[datetime]:
-        """
-        Encoded i2b2 patient visit number
-        """
-        return self._birth_date
-
-    @DynObject.entry(_t)
-    def death_date(self) -> Optional[datetime]:
-        """
-        Encoded i2b2 patient visit number
-        """
-        return self._death_date
-
-    @DynObject.entry(_t)
-    def sex_cd(self) -> Optional[str]:
-        """
-        Encoded i2b2 patient visit number
-        """
-        return self._sex_cd
-
-    @DynObject.entry(_t)
-    def age_in_years_num(self) -> Optional[int]:
-        """
-        Encoded i2b2 patient visit number
-        """
-        return self._age_in_years_num
-    
-    @DynObject.entry(_t)
-    def language_cd(self) -> Optional[str]:
-        return self._language_cd
-
-    @DynObject.entry(_t)
-    def race_cd(self) -> Optional[str]:
-        """
-        Encoded i2b2 patient visit number
-        """
-        return self._race_cd
-
-    @DynObject.entry(_t)
-    def marital_status_cd(self) -> Optional[str]:
-        return self._marital_status_cd
-    
-    @DynObject.entry(_t)
-    def religion_cd(self) -> Optional[str]:
-        return self._religion_cd
-    
-    @DynObject.entry(_t)
-    def zip_cd(self) -> Optional[str]:
-        return self._zip_cd
-    
-    @DynObject.entry(_t)
-    def statecityzip_path(self) -> Optional[str]:
-        return self._statecityzip_path
-    
-    @DynObject.entry(_t)
-    def income_cd(self) -> Optional[str]:
-        return self._income_cd
-    
-    @DynObject.entry(_t)
-    def patient_blob(self) -> Optional[str]:
-        return self._patient_blob
+        super().__init__()
 
     @classmethod
     def delete_upload_id(cls, tables: I2B2Tables, upload_id: int) -> int:

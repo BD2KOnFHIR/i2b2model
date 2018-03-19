@@ -4,7 +4,7 @@ import sys
 
 from i2b2model import __version__
 
-requires = ['SQLAlchemy', 'psycopg2-binary', 'python-dateutil']
+requires = ['SQLAlchemy', 'psycopg2-binary', 'python-dateutil', 'dynprops']
 if sys.version_info < (3, 5):
     requires.append('typing')
 print(find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]))

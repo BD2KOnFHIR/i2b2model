@@ -25,20 +25,29 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
+import io
 import sys
 import unittest
-from contextlib import contextmanager
+from contextlib import contextmanager, redirect_stdout
 from functools import reduce
 
 from i2b2model.scripts.removefacts import remove_facts
+from i2b2model.shared.i2b2core import I2B2Core, I2B2CoreWithUploadId
 from tests.utils.base_test_case import test_conf_file
+
+test_prefix = "test_i2b2model_"
 
 
 class CRCTestCase(unittest.TestCase):
+    def setUp(self):
+        I2B2Core._clear()
+        I2B2CoreWithUploadId._clear()
 
     def tearDown(self):
         if getattr(self, "_sourcesystem_cd", None):
             remove_facts(f"--conf {test_conf_file} -ss {self._sourcesystem_cd}".split())
+        I2B2Core._clear()
+        I2B2CoreWithUploadId._clear()
 
     @staticmethod
     def text_to_number(txt: str) -> int:
@@ -53,17 +62,19 @@ class CRCTestCase(unittest.TestCase):
         """
         save_ss_cd = getattr(self, "_sourcesystem_cd", None)
         save_up_id = getattr(self, "_upload_id", None)
-        self._sourcesystem_cd = "test_i2b2model_" + type(self).__name__
+        self._sourcesystem_cd = test_prefix + type(self).__name__
         self._upload_id = self.text_to_number(self._sourcesystem_cd)
-        print(f"+++++ {self._sourcesystem_cd}")
-        print(f"      {self._upload_id}")
+        # print(f"+++++ {self._sourcesystem_cd}")
+        # print(f"      {self._upload_id}")
         try:
             yield self._sourcesystem_cd
         finally:
-            # with redirect_stdout(io.StringIO()):
-            remove_facts(f"--conf {test_conf_file} -ss {self._sourcesystem_cd}".split())
-            print(f"      {self._upload_id}")
-            print(f"----- {self._sourcesystem_cd}")
+            debug_output = io.StringIO()
+            with redirect_stdout(debug_output):
+                remove_facts(f"--conf {test_conf_file} -ss {self._sourcesystem_cd}".split())
+                print(f"      {self._upload_id}")
+                print(f"----- {self._sourcesystem_cd}")
+            #print(debug_output.getvalue())
             if save_ss_cd:
                 self._sourcesystem_cd = save_ss_cd
                 self._upload_id = save_up_id

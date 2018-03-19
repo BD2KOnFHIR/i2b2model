@@ -26,29 +26,11 @@
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from typing import List, Tuple, Optional
 
-# create table i2b2demodata.patient_mapping
-# (
-# 	patient_ide varchar(200) not null,
-# 	patient_ide_source varchar(50) not null,
-# 	patient_num integer not null,
-# 	patient_ide_status varchar(50),
-# 	project_id varchar(50) not null,
-# 	upload_date timestamp,
-# 	update_date timestamp,
-# 	download_date timestamp,
-# 	import_date timestamp,
-# 	sourcesystem_cd varchar(50),
-# 	upload_id integer,
-# 	constraint patient_mapping_pk
-# 		primary key (patient_ide, patient_ide_source, project_id)
-# )
-# ;
-from typing import List, Tuple
-
+from dynprops import Local, Parent
 
 from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
-from i2b2model.sqlsupport.dynobject import DynElements, DynObject
 from i2b2model.sqlsupport.dbconnection import I2B2Tables
 
 
@@ -56,19 +38,29 @@ class PatientIDEStatus:
     class PatientIDEStatusCode:
         def __init__(self, code: str) -> None:
             self.code = code
+
+        def reify(self):
+            return self.code
+
     active = PatientIDEStatusCode("A")
     inactive = PatientIDEStatusCode("I")
     deleted = PatientIDEStatusCode("D")
     merged = PatientIDEStatusCode("M")
 
 
+
 class PatientMapping(I2B2CoreWithUploadId):
-    _t = DynElements(I2B2CoreWithUploadId)
+    patient_ide: Local[str]
+    patient_ide_source: Local[str]
+    patient_num: Local[Optional[int]]
+    patient_ide_status: Local[Optional[str]]
+    project_id: Local[str]
+    _: Parent
 
     key_fields = ["patient_ide", "patient_ide_source", "project_id"]
 
     def __init__(self, patient_num: int, patient_id: str, patient_ide_status: PatientIDEStatus.PatientIDEStatusCode,
-                 patient_ide_source: str, project_id: str, **kwargs):
+                 patient_ide_source: str, project_id: str):
         """
         Construct a patient mapping entry
         :param patient_num: patient number
@@ -76,53 +68,17 @@ class PatientMapping(I2B2CoreWithUploadId):
         :param patient_ide_status: status code
         :param patient_ide_source: clear text patient identifier source
         :param project_id: project identifier
-        :param kwargs:
 
         The patient number is the key to the patient dimension file.  The patient_mapping file has, at a minimum,
         one entry
         """
-        self._patient_num = patient_num
-        self._patient_ide = patient_id
-        self._patient_ide_status = patient_ide_status
-        self._patient_ide_source = patient_ide_source
-        self._project_id = project_id
+        self.patient_num = patient_num
+        self.patient_ide = patient_id
+        self.patient_ide_status = patient_ide_status
+        self.patient_ide_source = patient_ide_source
+        self.project_id = project_id
 
-        super().__init__(**kwargs)
-
-    @DynObject.entry(_t)
-    def patient_ide(self) -> str:
-        """
-        The encrypted patient identifier
-        """
-        return self._patient_ide
-
-    @DynObject.entry(_t)
-    def patient_ide_source(self) -> str:
-        """
-        The source system (source of what I don't really know)
-        """
-        return self._patient_ide_source
-
-    @DynObject.entry(_t)
-    def patient_num(self) -> int:
-        """
-        Patient number in the patient dimension file
-        """
-        return self._patient_num
-
-    @DynObject.entry(_t)
-    def patient_ide_status(self) -> str:
-        """
-        Patient number in the patient dimension file
-        """
-        return self._patient_ide_status.code
-
-    @DynObject.entry(_t)
-    def project_id(self) -> str:
-        """
-        Project identifier
-        """
-        return self._project_id
+        super().__init__()
 
     @classmethod
     def delete_upload_id(cls, tables: I2B2Tables, upload_id: int) -> int:

@@ -30,6 +30,7 @@ from typing import Optional, cast, Sized
 
 class VisualAttributes:
     """ i2b2 Metadata Visual attributes element
+
     """
     def __init__(self, string_value: Optional[str] = None) -> None:
         """
@@ -78,3 +79,6 @@ class VisualAttributes:
         rval += 'H' if self.hidden else 'A' if self.active else 'I'
         rval += 'E' if self.editable else ' '
         return rval
+
+    def reify(self):
+        return str(self)

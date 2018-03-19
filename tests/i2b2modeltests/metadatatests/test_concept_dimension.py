@@ -28,22 +28,31 @@
 import unittest
 from collections import OrderedDict
 from datetime import datetime
+
+from dynprops import as_dict, heading
+
+from i2b2model.shared.i2b2core import I2B2Core
 from tests.utils.base_test_case import BaseTestCase
 
 
 class ConceptDimensionTestCase(BaseTestCase):
+    def setUp(self):
+        I2B2Core._clear()
+
+    def tearDown(self):
+        I2B2Core._clear()
 
     def test_basics(self):
         from i2b2model.metadata.i2b2conceptdimension import ConceptDimension
 
         ConceptDimension._clear()
-        ConceptDimension.download_date = datetime(2017, 5, 25)
-        ConceptDimension.sourcesystem_cd = "TEST_SS"
-        ConceptDimension.import_date = datetime(2017, 5, 25)
+        I2B2Core.download_date = datetime(2017, 5, 25)
+        I2B2Core.sourcesystem_cd = "TEST_SS"
+        I2B2Core.import_date = datetime(2017, 5, 25)
 
         cd = ConceptDimension('TEST', 'root', 'Root test concept', ['L1', 'L2', 'root'], '\\TEST\\')
         self.assertAlmostNow(cd.update_date)
-        ConceptDimension.update_date = datetime(2001, 12, 1)
+        I2B2Core.update_date = datetime(2001, 12, 1)
         expected = OrderedDict([('concept_path', '\\TEST\\L1\\L2\\root\\'),
                                 ('concept_cd', 'TEST:root'),
                                 ('name_char', 'TEST Root test concept'),
@@ -53,7 +62,7 @@ class ConceptDimensionTestCase(BaseTestCase):
                                 ('import_date', datetime(2017, 5, 25, 0, 0)),
                                 ('sourcesystem_cd', 'TEST_SS'),
                                 ('upload_id', None)])
-        self.assertEqual(expected, cd._freeze())
+        self.assertEqual(expected, as_dict(cd))
 
         # Note - balance is actually a modifier.  This is strictly an example
         cd = ConceptDimension('TEST', 'root', 'Root balance test concept', ['L1', 'L2', 'balance'], '\\TEST\\')
@@ -66,7 +75,7 @@ class ConceptDimensionTestCase(BaseTestCase):
                                 ('import_date', datetime(2017, 5, 25, 0, 0)),
                                 ('sourcesystem_cd', 'TEST_SS'),
                                 ('upload_id', None)])
-        self.assertEqual(expected, cd._freeze())
+        self.assertEqual(expected, as_dict(cd))
 
     def test_interactions(self):
         """
@@ -77,9 +86,9 @@ class ConceptDimensionTestCase(BaseTestCase):
         from i2b2model.metadata.i2b2modifierdimension import ModifierDimension
 
         self.assertEqual('modifier_path\tmodifier_cd\tname_char\tmodifier_blob\tupdate_date\t'
-                         'download_date\timport_date\tsourcesystem_cd\tupload_id', ModifierDimension._header())
+                         'download_date\timport_date\tsourcesystem_cd\tupload_id', heading(ModifierDimension))
         self.assertEqual('concept_path\tconcept_cd\tname_char\tconcept_blob\tupdate_date\t'
-                         'download_date\timport_date\tsourcesystem_cd\tupload_id', ConceptDimension._header())
+                         'download_date\timport_date\tsourcesystem_cd\tupload_id', heading(ConceptDimension))
 
 
 if __name__ == '__main__':

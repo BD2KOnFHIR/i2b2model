@@ -29,77 +29,25 @@ from datetime import datetime
 from operator import or_
 from typing import Optional, List, Tuple, Callable, Dict
 
+from dynprops import DynProps, Global
 from sqlalchemy import Table, and_, update, delete, select
 from sqlalchemy.engine import Connection
 
 from .listchunker import ListChunker
-from i2b2model.sqlsupport.dynobject import DynObject, DynElements, DynamicPropType
 
 
-class I2B2Core(DynObject):
-    _t = DynElements()
+class I2B2Core(DynProps):
+    update_date: Global[datetime] = datetime.now
+    download_date: Global[datetime] = lambda self: self.update_date
+    import_date: Global[datetime] = lambda self: self.update_date
+    sourcesystem_cd: Global[str] = "Unspecified"
+
     _check_dups = False
-
-    def __init__(self,
-                 update_date: Optional[DynamicPropType] = None,
-                 download_date: Optional[DynamicPropType] = None,
-                 sourcesystem_cd: Optional[DynamicPropType] = None,
-                 import_date: Optional[DynamicPropType] = None):
-        self._update_date = update_date
-        self._download_date = download_date
-        self._sourcesystem_cd = sourcesystem_cd
-        self._import_date = import_date
-
-    @DynObject.entry(_t)
-    def update_date(self) -> datetime:
-        return self._resolve(self._update_date) if self._update_date is not None else datetime.now()
-
-    @DynObject.entry(_t)
-    def download_date(self) -> datetime:
-        return self._resolve(self._download_date) if self._download_date is not None else self.update_date
-
-    @DynObject.entry(_t)
-    def import_date(self) -> datetime:
-        return self._resolve(self._import_date) if self._import_date is not None else self.update_date
-
-    @DynObject.entry(_t)
-    def sourcesystem_cd(self) -> str:
-        return self._resolve(self._sourcesystem_cd) if self._sourcesystem_cd is not None else "Unspecified"
-
-
-class I2B2CoreWithUploadId(I2B2Core):
-    _t = DynElements(I2B2Core)
-
-    no_update_fields = ["update_date", "download_date", "import_date", "sourcesystem_cd", "upload_id"]
-    key_fields = None
-
-    def __init__(self,
-                 upload_id: Optional[DynamicPropType] = None,
-                 **kwargs):
-        super().__init__(**kwargs)
-        self._upload_id = upload_id
-
-    DynObject._after_root(_t)
-
-    @DynObject.entry(_t)
-    def upload_id(self) -> Optional[int]:
-        return self._resolve(self._upload_id)
-
-    @staticmethod
-    def _delete_upload_id(conn: Connection, table: Table, upload_id: int) -> int:
-        """
-        Remove all table records with the supplied upload_id
-        :param conn: sql connection
-        :param table: table to modify
-        :param upload_id: target upload_id
-        :return: number of records removed
-        """
-        return conn.execute(delete(table).where(table.c.upload_id == upload_id)).rowcount if upload_id else 0
 
     @staticmethod
     def _delete_sourcesystem_cd(conn: Connection, table: Table, sourcesystem_cd: str) -> int:
-        """
-        Remove all table records with the supplied upload_id
+        """ Remove all table records with the supplied upload_id
+
         :param conn: sql connection
         :param table: table to modify
         :param sourcesystem_cd: target sourcesystem code
@@ -108,10 +56,31 @@ class I2B2CoreWithUploadId(I2B2Core):
         return conn.execute(delete(table).where(table.c.sourcesystem_cd == sourcesystem_cd)).rowcount \
             if sourcesystem_cd else 0
 
+
+class I2B2CoreWithUploadId(I2B2Core):
+    upload_id: Global[Optional[int]]
+
+    # Do not change these fields if a record already exists
+    _no_update_fields = ["update_date", "download_date", "import_date", "sourcesystem_cd", "upload_id"]
+
+    # Key fields are set on a per-class basis
+    key_fields = None
+
+    @staticmethod
+    def _delete_upload_id(conn: Connection, table: Table, upload_id: int) -> int:
+        """Remove all table records with the supplied upload_id
+
+        :param conn: sql connection
+        :param table: table to modify
+        :param upload_id: target upload_id
+        :return: number of records removed
+        """
+        return conn.execute(delete(table).where(table.c.upload_id == upload_id)).rowcount if upload_id else 0
+
     @staticmethod
     def _nested_fcn(f: Callable, filters: List):
-        """
-        Distribute binary function f across list L
+        """ Distribute binary function f across list L
+
         :param f: Binary function
         :param filters: function arguments
         :return: chain of binary filters
@@ -136,8 +105,8 @@ class I2B2CoreWithUploadId(I2B2Core):
     @classmethod
     def _add_or_update_records(cls, conn: Connection, table: Table,
                                records: List["I2B2CoreWithUploadId"]) -> Tuple[int, int]:
-        """
-        Add or update the supplied table as needed to reflect the contents of records
+        """Add or update the supplied table as needed to reflect the contents of records
+
         :param table: i2b2 sql connection
         :param records: records to apply
         :return: number of records added / modified
@@ -154,7 +123,7 @@ class I2B2CoreWithUploadId(I2B2Core):
             rec_exists = conn.execute(select([table.c.upload_id]).where(key_filter)).rowcount
             if rec_exists:
                 known_values = {k: v for k, v in record._freeze().items()
-                                if v is not None and k not in cls.no_update_fields and
+                                if v is not None and k not in cls._no_update_fields and
                                 k not in cls.key_fields}
                 vals = [table.c[k] != v for k, v in known_values.items()]
                 val_filter = I2B2CoreWithUploadId._nested_fcn(or_, vals)
@@ -167,7 +136,6 @@ class I2B2CoreWithUploadId(I2B2Core):
             if cls._check_dups:
                 dups = cls._check_for_dups(inserts)
                 nprints = 0
-                # TODO: Figure out why duplicates are occuring -- they are very specific
                 if dups:
                     print("{} duplicate records encountered".format(len(dups)))
                     for k, vals in dups.items():

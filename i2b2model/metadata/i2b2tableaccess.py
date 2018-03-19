@@ -27,112 +27,42 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional
 
+from dynprops import DynProps, Local
+
 from i2b2model.metadata.i2b2ontologyquery import ConceptQuery, Query
 from i2b2model.metadata.i2b2ontologyvisualattributes import VisualAttributes
 from i2b2model.shared.tablenames import i2b2tablenames
-from i2b2model.sqlsupport.dynobject import DynObject, DynElements
 
 
-class TableAccess(DynObject):
-    _t = DynElements(DynObject)
-    _visualattributes = VisualAttributes("CA")
+class TableAccess(DynProps):
+    c_table_cd: Local[str]
+    c_table_name: Local[str] = i2b2tablenames.phys_name(i2b2tablenames.ontology_table)
+    c_protected_access: Local[str] = "N"
+    c_hlevel: Local[int]
+    c_fullname: Local[str]
+    c_name: Local[str]
+    c_synonym_cd: Local[str] = "N"
+    c_visualattributes: Local[str] = str(VisualAttributes("CA"))
+    c_totalnum: Local[Optional[int]]
+    c_basecode: Local[Optional[str]]
+    c_metadataxml: Local[Optional[str]]
+    c_facttablecolumn: Local[str] = lambda self: self._query.key
+    c_dimtablename: Local[str] = lambda self: self._query.table
+    c_columnname: Local[str] = lambda self: self._query.where_subj
+    c_columndatatype: Local[str] = lambda self: 'N' if self._query.numeric_key else 'T'
+    c_operator: Local[str] = lambda self: self._query.where_pred
+    c_dimcode: Local[str] = lambda self: self._query.where_obj
+    c_comment: Local[Optional[str]]
+    c_tooltip: Local[Optional[str]] = lambda self: self.c_name
+    c_entry_date: Local[Optional[str]]
+    c_change_date: Local[Optional[str]]
+    c_status_cd: Local[Optional[str]]
+    valuetype_cd: Local[Optional[str]]
 
     def __init__(self, table_cd: str, fullname: Optional[str]=None, query: Optional[Query]=None,
                  hlevel: Optional[int]=None, name: Optional[str]=None) -> None:
-        self._c_table_cd = table_cd
-        self._c_fullname = fullname if fullname else f"\\{table_cd}\\"
+        self.c_table_cd = table_cd
+        self.c_fullname = fullname if fullname else f"\\{table_cd}\\"
         self._query = query if query else ConceptQuery(self._c_fullname)
-        self._c_hlevel = hlevel if hlevel is not None else 1
-        self._c_name = name if name else f"{self._c_table_cd} Resources"
-
-    @DynObject.entry(_t)
-    def c_table_cd(self) -> str:
-        return self._c_table_cd
-
-    @DynObject.entry(_t)
-    def c_table_name(self) -> str:
-        return i2b2tablenames.phys_name(i2b2tablenames.ontology_table)
-
-    @DynObject.entry(_t)
-    def c_protected_access(self) -> str:
-        return "N"
-
-    @DynObject.entry(_t)
-    def c_hlevel(self) -> int:
-        return self._c_hlevel
-
-    @DynObject.entry(_t)
-    def c_fullname(self) -> str:
-        return self._c_fullname
-
-    @DynObject.entry(_t)
-    def c_name(self) -> str:
-        return self._c_name
-
-    @DynObject.entry(_t)
-    def c_synonym_cd(self) -> str:
-        return "N"
-
-    @DynObject.entry(_t)
-    def c_visualattributes(self) -> str:
-        return str(self._visualattributes)
-
-    @DynObject.entry(_t)
-    def c_totalnum(self) -> Optional[int]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_basecode(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_metadataxml(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_facttablecolumn(self) -> str:
-        return self._query.key
-
-    @DynObject.entry(_t)
-    def c_dimtablename(self) -> str:
-        return self._query.table
-
-    @DynObject.entry(_t)
-    def c_columnname(self) -> str:
-        return self._query.where_subj
-
-    @DynObject.entry(_t)
-    def c_columndatatype(self) -> str:
-        return 'N' if self._query.numeric_key else 'T'
-
-    @DynObject.entry(_t)
-    def c_operator(self) -> str:
-        return self._query.where_pred
-
-    @DynObject.entry(_t)
-    def c_dimcode(self) -> str:
-        return self._query.where_obj
-
-    @DynObject.entry(_t)
-    def c_comment(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_tooltip(self) -> Optional[str]:
-        return self.c_name
-
-    @DynObject.entry(_t)
-    def c_entry_date(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_change_date(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def c_status_cd(self) -> Optional[str]:
-        return None
-
-    @DynObject.entry(_t)
-    def valuetype_cd(self) -> Optional[str]:
-        return None
+        self.c_hlevel = hlevel if hlevel is not None else 1
+        self.c_name = name if name else f"{self._c_table_cd} Resources"

@@ -28,6 +28,7 @@
 
 import unittest
 
+from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
 from tests.utils.connection_helper import connection_helper
 
 
@@ -38,14 +39,14 @@ class PatientMappingSQLTestCase(unittest.TestCase):
         from i2b2model.data.i2b2patientmapping import PatientMapping, PatientIDEStatus
 
         PatientMapping.delete_upload_id(self.opts.tables, self.opts.uploadid)
-        PatientMapping.upload_id = self.opts.uploadid
+        I2B2CoreWithUploadId.upload_id = self.opts.uploadid
         pm = PatientMapping(10000001, "12345", PatientIDEStatus.active, "http://hl7.org/fhir/", "fhir")
 
         n_ins, n_upd = PatientMapping.add_or_update_records(self.opts.tables, [pm])
         self.assertEqual((0, 1), (n_upd, n_ins))
         n_ins, n_upd = PatientMapping.add_or_update_records(self.opts.tables, [pm])
         self.assertEqual((0, 0), (n_upd, n_ins))
-        pm._project_id = "TEST"
+        pm.project_id = "TEST"
 
         pm2 = PatientMapping(10000001, "12346", PatientIDEStatus.active, "http://hl7.org/fhir/", "fhir")
         n_ins, n_upd = PatientMapping.add_or_update_records(self.opts.tables, [pm, pm2])

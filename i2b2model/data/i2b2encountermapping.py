@@ -27,8 +27,9 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 from typing import Optional, List, Tuple
 
+from dynprops import Local
+
 from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
-from i2b2model.sqlsupport.dynobject import DynElements, DynObject
 from i2b2model.sqlsupport.dbconnection import I2B2Tables
 
 
@@ -36,6 +37,10 @@ class EncounterIDEStatus:
     class EncounterIDEStatusCode:
         def __init__(self, code: str) -> None:
             self.code = code
+
+        def reify(self):
+            return self.code
+
     active = EncounterIDEStatusCode("A")
     inactive = EncounterIDEStatusCode("I")
     deleted = EncounterIDEStatusCode("D")
@@ -43,7 +48,13 @@ class EncounterIDEStatus:
 
 
 class EncounterMapping(I2B2CoreWithUploadId):
-    _t = DynElements(I2B2CoreWithUploadId)
+    encounter_ide: Local[str]
+    encounter_ide_source: Local[str]
+    project_id: Local[Optional[str]]
+    encounter_num: Local[int]
+    patient_ide: Local[str]
+    patient_ide_source: Local[str]
+    encounter_ide_status: Local[Optional[str]]
 
     key_fields = ["encounter_ide", "encounter_ide_source", "project_id", "patient_ide", "patient_ide_source"]
 
@@ -54,45 +65,15 @@ class EncounterMapping(I2B2CoreWithUploadId):
                  encounter_num: int,
                  patient_ide: str,
                  patient_ide_source: str,
-                 encounter_ide_status: Optional[EncounterIDEStatus.EncounterIDEStatusCode],
-                 **kwargs):
-        self._encounter_ide = encounter_ide
-        self._encounter_ide_source = encounter_ide_source
-        self._project_id = project_id
-        self._encounter_num = encounter_num
-        self._patient_ide = patient_ide
-        self._patient_ide_source = patient_ide_source
-        self._encounter_ide_status = encounter_ide_status
-
-        super().__init__(**kwargs)
-
-    @DynObject.entry(_t)
-    def encounter_ide(self) -> str:
-        return self._encounter_ide
-
-    @DynObject.entry(_t)
-    def encounter_ide_source(self) -> str:
-        return self._encounter_ide_source
-
-    @DynObject.entry(_t)
-    def project_id(self) -> Optional[str]:
-        return self._project_id
-
-    @DynObject.entry(_t)
-    def encounter_num(self) -> int:
-        return self._encounter_num
-
-    @DynObject.entry(_t)
-    def patient_ide(self) -> str:
-        return self._patient_ide
-
-    @DynObject.entry(_t)
-    def patient_ide_source(self) -> str:
-        return self._patient_ide_source
-
-    @DynObject.entry(_t)
-    def encounter_ide_status(self) -> Optional[str]:
-        return self._encounter_ide_status.code if self._encounter_ide_status else None
+                 encounter_ide_status: Optional[EncounterIDEStatus.EncounterIDEStatusCode]):
+        self.encounter_ide = encounter_ide
+        self.encounter_ide_source = encounter_ide_source
+        self.project_id = project_id
+        self.encounter_num = encounter_num
+        self.patient_ide = patient_ide
+        self.patient_ide_source = patient_ide_source
+        self.encounter_ide_status = encounter_ide_status
+        super().__init__()
 
     @classmethod
     def delete_upload_id(cls, tables: I2B2Tables, upload_id: int) -> int:

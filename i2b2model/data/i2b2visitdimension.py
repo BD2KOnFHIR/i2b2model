@@ -28,8 +28,9 @@
 from datetime import datetime
 from typing import Optional, List, Tuple
 
+from dynprops import Local, Parent
+
 from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
-from i2b2model.sqlsupport.dynobject import DynElements, DynObject
 from i2b2model.sqlsupport.dbconnection import I2B2Tables
 
 
@@ -73,9 +74,22 @@ class ActiveStatusCd:
     def code(self):
         return self.endcode.code + self.startcode.code
 
+    def reify(self):
+        return self.code
+
 
 class VisitDimension(I2B2CoreWithUploadId):
-    _t = DynElements(I2B2CoreWithUploadId)
+    encounter_num: Local[int]
+    patient_num: Local[int]
+    active_status_cd: Local[Optional[ActiveStatusCd]]
+    start_date: Local[Optional[datetime]]
+    end_date: Local[Optional[datetime]]
+    inout_cd: Local[Optional[str]]
+    location_cd: Local[Optional[str]]
+    location_path: Local[Optional[str]]
+    length_of_stay: Local[Optional[int]]
+    visit_blob: Local[Optional[str]]
+    _: Parent
 
     key_fields = ["encounter_num", "patient_num"]
 
@@ -89,77 +103,18 @@ class VisitDimension(I2B2CoreWithUploadId):
                  location_cd: Optional[str] = None,
                  location_path: Optional[str] = None,
                  length_of_stay: Optional[int] = None,
-                 visit_blob: Optional[str] = None,
-                 **kwargs):
-        self._encounter_num = encounter_num
-        self._patient_num = patient_num
-        self._active_status_cd = active_status_cd
-        self._start_date = start_date
-        self._end_date = end_date
-        self._inout_cd = inout_cd
-        self._location_cd = location_cd
-        self._location_path = location_path
-        self._length_of_stay = length_of_stay
-        self._visit_blob = visit_blob
-        super().__init__(**kwargs)
-
-    @DynObject.entry(_t)
-    def encounter_num(self) -> int:
-        """
-        Reference number for the encounter/visit
-        """
-        return self._encounter_num
-
-    @DynObject.entry(_t)
-    def patient_num(self) -> int:
-        """
-        Reference number for the patient
-        """
-        return self._patient_num
-
-    @DynObject.entry(_t)
-    def active_status_cd(self) -> Optional[str]:
-        """
-        Reference number for the patient
-        """
-        return self._active_status_cd.code if self._active_status_cd else None
-
-    @DynObject.entry(_t)
-    def start_date(self) -> Optional[datetime]:
-        """
-        The date the event began
-        """
-        return self._start_date
-
-    @DynObject.entry(_t)
-    def end_date(self) -> Optional[datetime]:
-        """
-        The date the event ended
-        """
-        return self._end_date
-
-    @DynObject.entry(_t)
-    def inout_cd(self) -> Optional[str]:
-        """
-        The date the event ended
-        """
-        return self._inout_cd
-
-    @DynObject.entry(_t)
-    def location_cd(self) -> Optional[str]:
-        return self._location_cd
-
-    @DynObject.entry(_t)
-    def location_path(self) -> Optional[str]:
-        return self._location_path
-
-    @DynObject.entry(_t)
-    def length_of_stay(self) -> Optional[int]:
-        return self._length_of_stay
-
-    @DynObject.entry(_t)
-    def visit_blob(self) -> Optional[str]:
-        return self._visit_blob
+                 visit_blob: Optional[str] = None):
+        self.encounter_num = encounter_num
+        self.patient_num = patient_num
+        self.active_status_cd = active_status_cd
+        self.start_date = start_date
+        self.end_date = end_date
+        self.inout_cd = inout_cd
+        self.location_cd = location_cd
+        self.location_path = location_path
+        self.length_of_stay = length_of_stay
+        self.visit_blob = visit_blob
+        super().__init__()
 
     @classmethod
     def delete_upload_id(cls, tables: I2B2Tables, upload_id: int) -> int:

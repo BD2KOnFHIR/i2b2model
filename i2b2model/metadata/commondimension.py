@@ -28,16 +28,13 @@
 from typing import List
 
 from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
-from i2b2model.sqlsupport.dynobject import DynElements
 
 
 class CommonDimension(I2B2CoreWithUploadId):
     """ Common base class of all dimensions """
-    _t = DynElements(I2B2CoreWithUploadId)
-    graph = None
 
     def __init__(self, name_prefix: str, subject: str, subject_name: str, subject_path: List[str],
-                 base_path: str = '\\', **kwargs) -> None:
+                 base_path: str = '\\') -> None:
         """ Constructor
 
         :parem name_prefix: Namespace for concept code
@@ -45,9 +42,8 @@ class CommonDimension(I2B2CoreWithUploadId):
         :param subject_name: subject name
         :param subject_path: path to subject - may or may not include subject as final element
         :param base_path: base path for all entries
-        :param kwargs: additional arguments for i2b2 core
         """
-        super().__init__(**kwargs)
+        super().__init__()
         assert(base_path.endswith('\\'))
         self._name_prefix = name_prefix
         self._subject = subject

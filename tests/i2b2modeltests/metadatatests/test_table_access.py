@@ -29,6 +29,8 @@
 import unittest
 from collections import OrderedDict
 
+from dynprops import heading, as_dict
+
 from i2b2model.shared.tablenames import DEFAULT_ONTOLOGY_TABLE
 
 
@@ -41,7 +43,7 @@ class TableAccessTestCase(unittest.TestCase):
                           'c_synonym_cd\tc_visualattributes\tc_totalnum\tc_basecode\tc_metadataxml\t'
                           'c_facttablecolumn\tc_dimtablename\tc_columnname\tc_columndatatype\tc_operator\t'
                           'c_dimcode\tc_comment\tc_tooltip\tc_entry_date\tc_change_date\tc_status_cd\t'
-                          'valuetype_cd'), ta._header())
+                          'valuetype_cd'), heading(ta))
         self.assertEqual(OrderedDict([
              ('c_table_cd', 'FHIR'),
              ('c_table_name', DEFAULT_ONTOLOGY_TABLE),
@@ -65,7 +67,7 @@ class TableAccessTestCase(unittest.TestCase):
              ('c_entry_date', None),
              ('c_change_date', None),
              ('c_status_cd', None),
-             ('valuetype_cd', None)]), ta._freeze())
+             ('valuetype_cd', None)]), as_dict(ta))
 
     def test_general(self):
         from i2b2model.metadata.i2b2tableaccess import TableAccess
@@ -97,7 +99,7 @@ class TableAccessTestCase(unittest.TestCase):
              ('c_entry_date', None),
              ('c_change_date', None),
              ('c_status_cd', None),
-             ('valuetype_cd', None)]), ta._freeze())
+             ('valuetype_cd', None)]), as_dict(ta))
 
 
 if __name__ == '__main__':

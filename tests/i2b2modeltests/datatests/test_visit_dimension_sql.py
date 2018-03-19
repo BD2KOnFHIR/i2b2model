@@ -29,6 +29,7 @@
 import unittest
 from datetime import datetime
 
+from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
 from tests.utils.connection_helper import connection_helper
 
 
@@ -39,8 +40,7 @@ class VisitDimensionSQLTestCase(unittest.TestCase):
         from i2b2model.data.i2b2visitdimension import VisitDimension, ActiveStatusCd
 
         VisitDimension.delete_upload_id(self.opts.tables, self.opts.uploadid)
-        VisitDimension._clear()
-        VisitDimension.upload_id = self.opts.uploadid
+        I2B2CoreWithUploadId.upload_id = self.opts.uploadid
 
         x = VisitDimension(5000017, 10000017, ActiveStatusCd(ActiveStatusCd.sd_day, ActiveStatusCd.ed_year),
                            datetime(2007, 12, 9), datetime(2008, 1, 1))
@@ -49,8 +49,8 @@ class VisitDimensionSQLTestCase(unittest.TestCase):
         self.assertEqual((0, 1), (n_upd, n_ins))
         n_ins, n_upd = x.add_or_update_records(self.opts.tables, [x])
         self.assertEqual((0, 0), (n_upd, n_ins))
-        x._end_date = datetime(2010, 2, 1)
-        x._active_status_cd.endcode = ActiveStatusCd.ed_month
+        x.end_date = datetime(2010, 2, 1)
+        x.active_status_cd.endcode = ActiveStatusCd.ed_month
         y = VisitDimension(5000018, 10000017, ActiveStatusCd(ActiveStatusCd.sd_day, ActiveStatusCd.ed_year),
                            datetime(2007, 12, 9), datetime(2008, 1, 1))
 

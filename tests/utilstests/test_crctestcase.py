@@ -31,7 +31,7 @@ from argparse import Namespace
 
 from i2b2model.scripts.removefacts import list_test_artifacts
 from tests.utils.connection_helper import connection_helper
-from tests.utils.crc_testcase import CRCTestCase
+from tests.utils.crc_testcase import CRCTestCase, test_prefix
 
 
 class CRCTestCaseTestCase(CRCTestCase):
@@ -40,7 +40,7 @@ class CRCTestCaseTestCase(CRCTestCase):
         """ Determine whether the test cases all cleaned up after themselves """
         ch = connection_helper()
         opts = Namespace()
-        opts.testprefix = "test_i2b2model_"
+        opts.testprefix = test_prefix
         qr = list_test_artifacts(opts, ch.tables)
         self.assertFalse(bool(qr), """Run 'removefacts --conf <config> --removetestlist' or 
 execute 'tests/scripts/removetestfacts.py' to fix""")
@@ -48,9 +48,9 @@ execute 'tests/scripts/removetestfacts.py' to fix""")
     def test_sourcesystem_cd(self):
         """ Test CRCTestCase.sourcesystem_cd() nesting """
         with self.sourcesystem_cd():
-            self.assertEqual("test_i2b2model_" + type(self).__name__, self._sourcesystem_cd)
+            self.assertEqual(test_prefix + type(self).__name__, self._sourcesystem_cd)
             with self.sourcesystem_cd():
-                self.assertEqual("test_i2b2model_" + type(self).__name__, self._sourcesystem_cd)
+                self.assertEqual(test_prefix + type(self).__name__, self._sourcesystem_cd)
         self.assertIsNone(getattr(self, "_sourcesystem_cd", None))
         self.assertIsNone(getattr(self, "_upload_id", None))
 
@@ -58,8 +58,8 @@ execute 'tests/scripts/removetestfacts.py' to fix""")
     def test_sourcesystem_cd_2(self):
         """ Test CRCTestCase.sourcesystem_cd() assertion failure processing """
         with self.sourcesystem_cd():
-            self.assertEqual("test_i2b2model_" + type(self).__name__, self._sourcesystem_cd)
-            self.assertEqual(117651, self._upload_id)
+            self.assertEqual(test_prefix + type(self).__name__, self._sourcesystem_cd)
+            self.assertEqual(117651, self._upload_id, "This should fail with '117651 != 13735'")
             self.assertTrue(False)
 
     def test_zsourcesystem_cd(self):

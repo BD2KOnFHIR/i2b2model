@@ -29,6 +29,9 @@ import unittest
 from collections import OrderedDict
 from datetime import datetime
 
+from dynprops import heading, as_dict
+
+from i2b2model.shared.i2b2core import I2B2Core
 from tests.utils.crc_testcase import CRCTestCase
 
 
@@ -36,16 +39,15 @@ class ObservationFactTestCase(CRCTestCase):
 
     def test_basics(self):
         from i2b2model.data.i2b2observationfact import ObservationFact, ObservationFactKey
-        ObservationFact._clear()
-        ObservationFact.update_date = datetime(2017, 2, 19, 12, 33)
+        I2B2Core.update_date = datetime(2017, 2, 19, 12, 33)
         with self.sourcesystem_cd():
-            ObservationFact.sourcesystem_cd = self._sourcesystem_cd
+            I2B2Core.sourcesystem_cd = self._sourcesystem_cd
             ofk = ObservationFactKey(12345, 23456, 'provider', datetime(2017, 5, 23, 11, 17))
-            x = ObservationFact(ofk, 'fhir:concept', sourcesystem_cd=self._sourcesystem_cd)
+            x = ObservationFact(ofk, 'fhir:concept')
             self.assertEqual('encounter_num\tpatient_num\tconcept_cd\tprovider_id\tstart_date\tmodifier_cd\t'
                              'instance_num\tvaltype_cd\ttval_char\tnval_num\tvalueflag_cd\tquantity_num\tunits_cd\t'
                              'end_date\tlocation_cd\tobservation_blob\tconfidence_num\tupdate_date\tdownload_date\t'
-                             'import_date\tsourcesystem_cd\tupload_id', x._header())
+                             'import_date\tsourcesystem_cd\tupload_id', heading(x))
             self.assertEqual(OrderedDict([
                  ('encounter_num', 23456),
                  ('patient_num', 12345),
@@ -68,7 +70,7 @@ class ObservationFactTestCase(CRCTestCase):
                  ('download_date', datetime(2017, 2, 19, 12, 33)),
                  ('import_date', datetime(2017, 2, 19, 12, 33)),
                  ('sourcesystem_cd', self._sourcesystem_cd),
-                 ('upload_id', None)]), x._freeze())
+                 ('upload_id', None)]), as_dict(x))
 
 
 if __name__ == '__main__':
