@@ -49,6 +49,7 @@ class TableNamesTestCase(unittest.TestCase):
              'patient_dimension',
              'patient_mapping',
              'provider_dimension',
+             'schemes',
              'table_access',
              'visit_dimension'], i2b2tablenames.all_tables())
 

@@ -46,6 +46,7 @@ class _I2B2Tables:
         self.visit_dimension = None
         self.provider_dimension = None
         self.encounter_mapping = None
+        self.schemes = None
 
     def __getattribute__(self, item):
         """ Return the logical name of a table  """

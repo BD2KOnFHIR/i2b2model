@@ -87,14 +87,3 @@ class OntologyEntry(I2B2Core):
 
     def __eq__(self, other):
         return self.c_fullname + self.m_applied_path == other.c_fullname + self.m_applied_path
-
-
-def OntologyRoot(base: str) -> OntologyEntry:
-    """ Return a root ontology entry """
-    if not base.startswith('\\'):
-        base = '\\' + base
-    if not base.endswith('\\'):
-        base = base + '\\'
-    rval = OntologyEntry(base, EmptyQuery(), VisualAttributes("CA"))
-    rval.c_name = base[1:-1]
-    return rval

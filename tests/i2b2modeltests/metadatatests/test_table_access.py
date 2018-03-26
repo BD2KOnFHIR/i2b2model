@@ -28,16 +28,23 @@
 
 import unittest
 from collections import OrderedDict
+from datetime import datetime
 
 from dynprops import heading, as_dict
 
 from i2b2model.shared.tablenames import DEFAULT_ONTOLOGY_TABLE
+from i2b2model.metadata.i2b2tableaccess import TableAccess
 
 
 class TableAccessTestCase(unittest.TestCase):
-    def test_fhir(self):
-        from i2b2model.metadata.i2b2tableaccess import TableAccess
+    def setUp(self):
         TableAccess._clear()
+
+    def defaultTestResult(self):
+        TableAccess._clear()
+
+    def test_fhir(self):
+        TableAccess.c_entry_date = datetime(2018, 3, 24, 11, 12)
         ta = TableAccess('FHIR')
         self.assertEqual(('c_table_cd\tc_table_name\tc_protected_access\tc_hlevel\tc_fullname\tc_name\t'
                           'c_synonym_cd\tc_visualattributes\tc_totalnum\tc_basecode\tc_metadataxml\t'
@@ -64,16 +71,15 @@ class TableAccessTestCase(unittest.TestCase):
              ('c_dimcode', '\\FHIR\\'),
              ('c_comment', None),
              ('c_tooltip', 'FHIR Resources'),
-             ('c_entry_date', None),
+             ('c_entry_date', datetime(2018, 3, 24, 11, 12)),
              ('c_change_date', None),
              ('c_status_cd', None),
              ('valuetype_cd', None)]), as_dict(ta))
 
     def test_general(self):
-        from i2b2model.metadata.i2b2tableaccess import TableAccess
         from i2b2model.metadata.i2b2ontologyquery import Query
 
-        TableAccess._clear()
+        TableAccess.c_entry_date = datetime(2018, 3, 24, 11, 17)
         q = Query('ITCP_EVENTS', 'concept_cd', False, 'C_FULLNAME', '=', '\\SCT\\276746005')
         ta = TableAccess('SCT_ENV_EVENT', '\\SCT\\276746005\\', q, 2, 'Environmental event (event)')
         self.assertEqual(OrderedDict([
@@ -96,7 +102,7 @@ class TableAccessTestCase(unittest.TestCase):
              ('c_dimcode', '\\SCT\\276746005'),
              ('c_comment', None),
              ('c_tooltip', 'Environmental event (event)'),
-             ('c_entry_date', None),
+             ('c_entry_date', datetime(2018, 3, 24, 11, 17)),
              ('c_change_date', None),
              ('c_status_cd', None),
              ('valuetype_cd', None)]), as_dict(ta))
