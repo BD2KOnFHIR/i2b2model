@@ -3,8 +3,8 @@ This directory tests the functionality in `i2b2model.sqlsupport`
 
 | File | Test | Function | Dependencies |
 | ---- | ---- | -------- | -------- |
-| test_dbconnection.py | test_decodefileargs1 | Test `dbconnection.add_connection_args` and `dbconnection.decode_file_args` | tests/conf/db_conf |
-| | test_decodefileargs2 | Test database specific overrids in `dbconnection.decode_file_args` | tests/conf/db_conf_2 |
+| test_dbconnection.py | test_decodefileargs1 | Test `dbconnection.add_connection_args` and `dbconnection.decode_file_args` | tess/utils/confts/utils/conf/db_conf |
+| | test_decodefileargs2 | Test database specific overrids in `dbconnection.decode_file_args` | tests/utils/conf/db_conf_2 |
 | test_dynamic_object | test_basics | Various tests for the dynamic object implementation | |
 | | test_inheritence | | |
 | | test_overrides | | |

@@ -25,15 +25,16 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-import unittest
 import os
+import unittest
 
 from i2b2model.sqlsupport.dbconnection import process_parsed_args
 from i2b2model.sqlsupport.file_aware_parser import FileAwareParser
+from tests.utils.base_test_case import test_conf_file, test_conf_directory
 
 
 class DBConnectionTestCase(unittest.TestCase):
-    dirname, _ = os.path.split(os.path.abspath(__file__))
+    conf_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data'))
 
     def test_decodefileargs1(self):
         from i2b2model.sqlsupport.dbconnection import add_connection_args
@@ -41,8 +42,7 @@ class DBConnectionTestCase(unittest.TestCase):
         parser = FileAwareParser()
         parser.add_argument('-mv', '--metadatavoc', help="Unused")
         add_connection_args(parser)
-        opts = parser.parse_args(parser.decode_file_args("--conf {}".
-                                                         format(os.path.join(self.dirname, 'data', 'db_conf')).split()))
+        opts = parser.parse_args(parser.decode_file_args(f"--conf {os.path.join(self.conf_dir, 'db_conf')}".split()))
         self.assertEqual("postgresql+psycopg2://localhost:5432/i2b2", opts.crcdb)
         self.assertEqual("postgresql+psycopg2://localhost:5433/i2b2", opts.ontodb)
         self.assertEqual("postgresql+psycopg2://localhost:5431/i2b2", opts.dburl)
@@ -57,7 +57,7 @@ class DBConnectionTestCase(unittest.TestCase):
         add_connection_args(parser)
         opts = process_parsed_args(
             parser.parse_args(
-                parser.decode_file_args("--conf {}".format(os.path.join(self.dirname, 'data', 'db_conf_2')).split())),
+                parser.decode_file_args("--conf {}".format(os.path.join(self.conf_dir, 'db_conf_2')).split())),
             None, False)
         self.assertEqual("postgresql+psycopg2://localhost:5431/i2b2", opts.crcdb)
         self.assertEqual("user2", opts.crcuser)

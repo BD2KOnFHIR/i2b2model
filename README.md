@@ -12,6 +12,7 @@ Python tools for working with the i2b2 data model
 * 0.1.2 - Added more options to TableAccess to support i2b2terminology project
 * 0.1.3 - Moved OntologyRoot from i2FHIRb2 to here
 * 0.2.0 - Refactored for dynprops
+* 0.2.1 - Include tests/scripts and tests/utils for re-use in other packages
 
 ## Requirements
 1) Python 3.6 or later

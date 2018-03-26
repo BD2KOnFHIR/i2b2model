@@ -29,7 +29,7 @@ from argparse import Namespace
 
 from i2b2model.sqlsupport.dbconnection import add_connection_args, process_parsed_args
 from i2b2model.sqlsupport.file_aware_parser import FileAwareParser
-from tests.utils.base_test_case import test_conf_directory
+from tests.utils.base_test_case import test_conf_file
 
 
 def connection_helper() -> Namespace:
@@ -38,5 +38,5 @@ def connection_helper() -> Namespace:
     parser.add_argument("-u", "--uploadid", metavar="Upload identifier",
                         help="Upload identifer -- uniquely identifies this batch", type=int, required=True)
     opts = add_connection_args(parser)\
-        .parse_args(parser.decode_file_args(['-u', '41712', '--conf', test_conf_directory + '/db_conf']))
+        .parse_args(parser.decode_file_args(['-u', '41712', '--conf', test_conf_file]))
     return process_parsed_args(opts, parser.error)

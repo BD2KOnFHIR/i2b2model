@@ -31,6 +31,7 @@ import unittest
 import os
 
 from i2b2model.scripts.removefacts import remove_facts
+from tests.utils.base_test_case import test_conf_file
 from tests.utils.script_test_base import ScriptTestBase
 
 
@@ -43,7 +44,6 @@ class RemoveFactsTestCase(ScriptTestBase):
         cls.save_output = False
         cls.tst_dir = "removefacts"
         cls.tst_fcn = remove_facts
-        cls.conf_file_loc = os.path.join(cls.dirname, 'data', 'db_conf')
 
     def test_no_args(self):
         self.check_error_output("", "noargs")
@@ -55,32 +55,32 @@ class RemoveFactsTestCase(ScriptTestBase):
         self.check_error_output("-u 12345", "noconfig")
 
     def test_onearg(self):
-        self.check_output_output(f"--conf {self.conf_file_loc} -u 123450 -u 123450", "onearg")
+        self.check_output_output(f"--conf {test_conf_file} -u 123450 -u 123450", "onearg")
 
     def test_threeargs(self):
-        self.check_output_output(f"--conf {self.conf_file_loc} -u 123450 123460 123470", "threeargs")
+        self.check_output_output(f"--conf {test_conf_file} -u 123450 123460 123470", "threeargs")
 
     def test_sourcesystem(self):
-        self.check_output_output(f"--conf {self.conf_file_loc} --sourcesystem SAMPLE", "sourcesystem")
+        self.check_output_output(f"--conf {test_conf_file} --sourcesystem SAMPLE", "sourcesystem")
 
     def test_ss_and_id(self):
-        self.check_output_output(f"--conf {self.conf_file_loc} -u 123450 -ss SAMPLE", "ssandid")
+        self.check_output_output(f"--conf {test_conf_file} -u 123450 -ss SAMPLE", "ssandid")
 
     def test_config_parms(self):
-        self.check_output_output(f"--conf {self.conf_file_loc} -u 123450", "confparms")
+        self.check_output_output(f"--conf {test_conf_file} -u 123450", "confparms")
 
     def test_list_testlist(self):
-        self.check_output_output(f"--conf {self.conf_file_loc} --testlist", "testlist1", multipart_test=True)
-        self.check_output_output(f"--conf {self.conf_file_loc} -p TEST_ITEM_ --testlist", "testlist2")
+        self.check_output_output(f"--conf {test_conf_file} --testlist", "testlist1", multipart_test=True)
+        self.check_output_output(f"--conf {test_conf_file} -p TEST_ITEM_ --testlist", "testlist2")
 
     def test_remove_testlist(self):
-        self.check_output_output(f"--conf {self.conf_file_loc} --removetestlist", "removelist1", multipart_test=True)
-        self.check_output_output(f"--conf {self.conf_file_loc} -p TEST_ITEM_ --removetestlist", "removelist2")
+        self.check_output_output(f"--conf {test_conf_file} --removetestlist", "removelist1", multipart_test=True)
+        self.check_output_output(f"--conf {test_conf_file} -p TEST_ITEM_ --removetestlist", "removelist2")
 
     def test_remove_and_ss(self):
-        self.check_error_output(f"--conf {self.conf_file_loc} --removetestlist -ss X", "removeerror1",
-                                 multipart_test=True)
-        self.check_error_output(f"--conf {self.conf_file_loc} -p TEST_ITEM_ --removetestlist -u 1", "removeerror2")
+        self.check_error_output(f"--conf {test_conf_file} --removetestlist -ss X", "removeerror1",
+                                multipart_test=True)
+        self.check_error_output(f"--conf {test_conf_file} -p TEST_ITEM_ --removetestlist -u 1", "removeerror2")
 
 
 if __name__ == '__main__':

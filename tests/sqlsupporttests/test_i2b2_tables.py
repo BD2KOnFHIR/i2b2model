@@ -25,13 +25,13 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
 # OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 # OF THE POSSIBILITY OF SUCH DAMAGE.
-import os
 import unittest
+
 from sqlalchemy import select
 
 from i2b2model.sqlsupport.dbconnection import process_parsed_args, add_connection_args
 from i2b2model.sqlsupport.file_aware_parser import FileAwareParser
-from tests.utils.base_test_case import test_conf_directory
+from tests.utils.base_test_case import test_conf_file
 
 
 def caught_error(message):
@@ -41,10 +41,9 @@ def caught_error(message):
 # NOTE: if you get a "no tests" error, it is because parse_args does an exit(1).  Chances are
 # the issue is in the location of the db_conf file
 class I2B2TablesTestCase(unittest.TestCase):
-    conf_file = os.path.abspath(os.path.join(test_conf_directory, 'db_conf'))
     parser = FileAwareParser()
     add_connection_args(parser, strong_config_file=False)
-    opts = parser.parse_args(f"--conf {conf_file}".split())
+    opts = parser.parse_args(f"--conf {test_conf_file}".split())
     process_parsed_args(opts, None)
 
     def test_basics(self):

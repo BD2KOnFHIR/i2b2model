@@ -1,26 +1,26 @@
+from os import path
 from setuptools import setup, find_packages
-
-import sys
 
 from i2b2model import __version__
 
-requires = ['SQLAlchemy', 'psycopg2-binary', 'python-dateutil', 'dynprops']
-if sys.version_info < (3, 5):
-    requires.append('typing')
-print(find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]))
+with open(path.join(path.abspath(path.dirname(__file__)), 'README.rst')) as f:
+    long_description = f.read()
+
+packages = find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"])
+packages.extend(['tests.scripts', 'tests.utils'])
 
 setup(
     name='i2b2model',
     version=__version__,
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    description='i2b2 Model Wrapper',
+    long_description=long_description,
     url='https://github.com/BD2KOnFHIR/i2b2model',
     license='Apache 2.0',
     author='Harold Solbrig',
     author_email='solbrig.harold@mayo.edu',
-    description='i2b2 Model Wrapper',
-    long_description='Representation of i2b2 model for Python based loading and manipulation',
-    install_requires=requires,
-    scripts=['scripts/removefacts', 'scripts/genconffile'],
+    packages=packages,
+    package_data={'tests.utils': ['db_conf']},
+    install_requires=['SQLAlchemy', 'psycopg2-binary', 'python-dateutil', 'dynprops'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

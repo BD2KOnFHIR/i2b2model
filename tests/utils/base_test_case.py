@@ -33,7 +33,7 @@ from typing import Union
 from dateutil.parser import parse
 
 test_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-test_conf_directory = os.path.join(test_directory, 'conf')
+test_conf_directory = os.path.join(test_directory, 'utils', 'conf')
 test_conf_file = os.path.abspath(os.path.join(test_conf_directory, 'db_conf'))
 test_data_directory = os.path.join(test_directory, 'data')
 
