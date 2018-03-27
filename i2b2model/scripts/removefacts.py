@@ -131,7 +131,7 @@ def remove_facts(argv: List[str]) -> bool:
     if (local_opts.testlist or local_opts.removetestlist) and (local_opts.uploadid or local_opts.sourcesystem):
         parser.error("Cannot combine -ss or -u option with testlist options.  Use -p to specify ss prefix")
 
-    opts = parser.parse_args(parser.decode_file_args(argv))     # Include the options file
+    opts, _ = parser.parse_known_args(parser.decode_file_args(argv))     # Include the options file
     if opts is None:
         return False
     opts.uploadid = local_opts.uploadid

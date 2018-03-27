@@ -2,4 +2,4 @@
 include LICENSE.txt
 
 # Include the data files
-include tests/utils/conf/db_conf
+include i2b2model/testingutils/conf/db_conf

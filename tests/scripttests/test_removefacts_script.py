@@ -1,38 +1,11 @@
-# Copyright (c) 2017, Mayo Clinic
-# All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without modification,
-# are permitted provided that the following conditions are met:
-#
-# Redistributions of source code must retain the above copyright notice, this
-#     list of conditions and the following disclaimer.
-#
-#     Redistributions in binary form must reproduce the above copyright notice,
-#     this list of conditions and the following disclaimer in the documentation
-#     and/or other materials provided with the distribution.
-#
-#     Neither the name of the Mayo Clinic nor the names of its contributors
-#     may be used to endorse or promote products derived from this software
-#     without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-# IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
-# INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
-# LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-# OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import unittest
 
 import os
 
 from i2b2model.scripts.removefacts import remove_facts
-from tests.utils.base_test_case import test_conf_file
-from tests.utils.script_test_base import ScriptTestBase
+from i2b2model.testingutils.script_test_base import ScriptTestBase
+from tests.utils.crc_testcase import CRCTestCase
 
 
 class RemoveFactsTestCase(ScriptTestBase):
@@ -55,32 +28,32 @@ class RemoveFactsTestCase(ScriptTestBase):
         self.check_error_output("-u 12345", "noconfig")
 
     def test_onearg(self):
-        self.check_output_output(f"--conf {test_conf_file} -u 123450 -u 123450", "onearg")
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -u 123450 -u 123450", "onearg")
 
     def test_threeargs(self):
-        self.check_output_output(f"--conf {test_conf_file} -u 123450 123460 123470", "threeargs")
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -u 123450 123460 123470", "threeargs")
 
     def test_sourcesystem(self):
-        self.check_output_output(f"--conf {test_conf_file} --sourcesystem SAMPLE", "sourcesystem")
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} --sourcesystem SAMPLE", "sourcesystem")
 
     def test_ss_and_id(self):
-        self.check_output_output(f"--conf {test_conf_file} -u 123450 -ss SAMPLE", "ssandid")
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -u 123450 -ss SAMPLE", "ssandid")
 
     def test_config_parms(self):
-        self.check_output_output(f"--conf {test_conf_file} -u 123450", "confparms")
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -u 123450", "confparms")
 
     def test_list_testlist(self):
-        self.check_output_output(f"--conf {test_conf_file} --testlist", "testlist1", multipart_test=True)
-        self.check_output_output(f"--conf {test_conf_file} -p TEST_ITEM_ --testlist", "testlist2")
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} --testlist", "testlist1", multipart_test=True)
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -p TEST_ITEM_ --testlist", "testlist2")
 
     def test_remove_testlist(self):
-        self.check_output_output(f"--conf {test_conf_file} --removetestlist", "removelist1", multipart_test=True)
-        self.check_output_output(f"--conf {test_conf_file} -p TEST_ITEM_ --removetestlist", "removelist2")
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} --removetestlist", "removelist1", multipart_test=True)
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -p TEST_ITEM_ --removetestlist", "removelist2")
 
     def test_remove_and_ss(self):
-        self.check_error_output(f"--conf {test_conf_file} --removetestlist -ss X", "removeerror1",
+        self.check_error_output(f"--conf {CRCTestCase.test_conf_file} --removetestlist -ss X", "removeerror1",
                                 multipart_test=True)
-        self.check_error_output(f"--conf {test_conf_file} -p TEST_ITEM_ --removetestlist -u 1", "removeerror2")
+        self.check_error_output(f"--conf {CRCTestCase.test_conf_file} -p TEST_ITEM_ --removetestlist -u 1", "removeerror2")
 
 
 if __name__ == '__main__':

@@ -7,7 +7,6 @@ with open(path.join(path.abspath(path.dirname(__file__)), 'README.rst')) as f:
     long_description = f.read()
 
 packages = find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"])
-packages.extend(['tests.scripts', 'tests.utils'])
 
 setup(
     name='i2b2model',
@@ -19,7 +18,6 @@ setup(
     author='Harold Solbrig',
     author_email='solbrig.harold@mayo.edu',
     packages=packages,
-    package_data={'tests.utils': ['db_conf']},
     install_requires=['SQLAlchemy', 'psycopg2-binary', 'python-dateutil', 'dynprops'],
     classifiers=[
         'Development Status :: 3 - Alpha',

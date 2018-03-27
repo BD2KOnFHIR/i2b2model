@@ -13,6 +13,7 @@ Python tools for working with the i2b2 data model
 * 0.1.3 - Moved OntologyRoot from i2FHIRb2 to here
 * 0.2.0 - Refactored for dynprops
 * 0.2.1 - Include tests/scripts and tests/utils for re-use in other packages
+* 0.2.2 - Moved testing tools to package base (testingutils)
 
 ## Requirements
 1) Python 3.6 or later
