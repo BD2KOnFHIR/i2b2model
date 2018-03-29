@@ -2,7 +2,7 @@
 import unittest
 from datetime import datetime, timedelta
 
-from dynprops import as_dict, heading
+from dynprops import as_dict, heading, clear
 
 from i2b2model.data.i2b2patientdimension import VitalStatusCd
 from i2b2model.shared.i2b2core import I2B2Core, I2B2CoreWithUploadId
@@ -11,22 +11,22 @@ from i2b2model.testingutils.base_test_case import BaseTestCase
 
 class I2B2CoreTestCase(BaseTestCase):
     def setUp(self):
-        I2B2Core._clear()
-        I2B2CoreWithUploadId._clear()
+        clear(I2B2Core)
+        clear(I2B2CoreWithUploadId)
 
     def tearDown(self):
-        I2B2Core._clear()
-        I2B2CoreWithUploadId._clear()
+        clear(I2B2Core)
+        clear(I2B2CoreWithUploadId)
 
     def test_defaults(self):
         rtn = I2B2Core()
         rtnf = as_dict(rtn)
         self.assertAlmostNow(rtn.update_date)
-        self.assertDatesAlmostEqual(rtn.update_date, rtnf['update_date'])
+        self.assertDatesAlmostEqual(rtn.update_date, str(rtnf['update_date']))
         self.assertAlmostNow(rtn.download_date)
-        self.assertDatesAlmostEqual(rtn.download_date, rtnf['download_date'])
+        self.assertDatesAlmostEqual(rtn.download_date, str(rtnf['download_date']))
         self.assertAlmostNow(rtn.import_date)
-        self.assertDatesAlmostEqual(rtn.import_date, rtnf['import_date'])
+        self.assertDatesAlmostEqual(rtn.import_date, str(rtnf['import_date']))
         self.assertEqual('Unspecified', rtn.sourcesystem_cd)
         self.assertEqual(rtn.sourcesystem_cd, rtnf['sourcesystem_cd'])
         self.assertEqual(['update_date', 'download_date', 'import_date', 'sourcesystem_cd'], list(rtnf.keys()))
@@ -41,7 +41,7 @@ class I2B2CoreTestCase(BaseTestCase):
         self.assertEqual('MASTER', rtn.sourcesystem_cd)
         self.assertDatesAlmostEqual(rtn.update_date, str(datetime.now() + timedelta(hours=2)))
 
-        I2B2Core._clear()
+        clear(I2B2Core)
         I2B2CoreWithUploadId.upload_id = 1777439
         rtn = I2B2CoreWithUploadId()
         if rtn.sourcesystem_cd != 'Unspecified':
@@ -54,10 +54,10 @@ class I2B2CoreTestCase(BaseTestCase):
             _ = rtn.upload_id
 
     def test_settings(self):
-        I2B2Core._clear()
-        I2B2Core.sourcesystem_cd="abcd"
-        I2B2Core.update_date=datetime(2014, 7, 31)
-        I2B2Core.download_date=datetime.now
+        clear(I2B2Core)
+        I2B2Core.sourcesystem_cd = "abcd"
+        I2B2Core.update_date = datetime(2014, 7, 31)
+        I2B2Core.download_date = datetime.now
         rtn = I2B2Core()
 
         rtnf = as_dict(rtn)
@@ -80,7 +80,7 @@ class I2B2CoreTestCase(BaseTestCase):
         from i2b2model.data.i2b2patientdimension import PatientDimension
 
         PatientDimension._clear()
-        I2B2CoreWithUploadId._clear()
+        clear(I2B2CoreWithUploadId)
         pd = PatientDimension(111, VitalStatusCd('U', 'D'))
 
         I2B2Core.sourcesystem_cd = "abc"
@@ -101,9 +101,8 @@ class I2B2CoreTestCase(BaseTestCase):
 
         PatientDimension._clear()
         self.assertEqual("abc", pd.sourcesystem_cd)
-        I2B2Core._clear()
+        clear(I2B2Core)
         self.assertEqual("Unspecified", pd.sourcesystem_cd)
-
 
     def test_common_setters(self):
         from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
@@ -111,6 +110,7 @@ class I2B2CoreTestCase(BaseTestCase):
         I2B2CoreWithUploadId.upload_id = 17
         with self.assertRaises(ValueError):
             PatientDimension.upload_id = 17
+
 
 if __name__ == '__main__':
     unittest.main()

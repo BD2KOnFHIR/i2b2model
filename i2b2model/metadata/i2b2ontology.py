@@ -2,7 +2,7 @@ from typing import Optional
 
 from dynprops import Local, Parent
 
-from i2b2model.metadata.i2b2ontologyquery import Query, EmptyQuery
+from i2b2model.metadata.i2b2ontologyquery import Query
 from i2b2model.metadata.i2b2ontologyvisualattributes import VisualAttributes
 from i2b2model.shared.i2b2core import I2B2Core
 
@@ -50,7 +50,8 @@ class OntologyEntry(I2B2Core):
         assert(c_full_name.endswith('\\'))
         self.c_fullname = c_full_name
         self._query = query
-        self._visualattributes = visualattributes if visualattributes else VisualAttributes()
+        if visualattributes:
+            self.c_visualattributes = visualattributes
         self.c_basecode = c_basecode
         self._modifier_exclusion = False
         self._hlevel_bias = 0

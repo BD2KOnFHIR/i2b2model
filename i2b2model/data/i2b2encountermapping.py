@@ -1,6 +1,6 @@
 from typing import Optional, List, Tuple
 
-from dynprops import Local
+from dynprops import Local, Parent
 
 from i2b2model.shared.i2b2core import I2B2CoreWithUploadId
 from i2b2model.sqlsupport.dbconnection import I2B2Tables
@@ -28,6 +28,7 @@ class EncounterMapping(I2B2CoreWithUploadId):
     patient_ide: Local[str]
     patient_ide_source: Local[str]
     encounter_ide_status: Local[Optional[str]]
+    _: Parent
 
     key_fields = ["encounter_ide", "encounter_ide_source", "project_id", "patient_ide", "patient_ide_source"]
 

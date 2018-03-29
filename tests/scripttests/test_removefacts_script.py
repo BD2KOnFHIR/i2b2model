@@ -3,13 +3,15 @@ import unittest
 
 import os
 
+from i2b2model import __version__
 from i2b2model.scripts.removefacts import remove_facts
 from i2b2model.testingutils.script_test_base import ScriptTestBase
 from tests.utils.crc_testcase import CRCTestCase
 
 
 class RemoveFactsTestCase(ScriptTestBase):
-    dirname, _ = os.path.split(os.path.abspath(__file__))
+    ScriptTestBase.dirname = os.path.abspath(os.path.dirname(__file__))
+    ScriptTestBase.version = __version__
 
     @classmethod
     def setUpClass(cls):
@@ -47,13 +49,15 @@ class RemoveFactsTestCase(ScriptTestBase):
         self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -p TEST_ITEM_ --testlist", "testlist2")
 
     def test_remove_testlist(self):
-        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} --removetestlist", "removelist1", multipart_test=True)
+        self.check_output_output(f"--conf {CRCTestCase.test_conf_file} --removetestlist", "removelist1",
+                                 multipart_test=True)
         self.check_output_output(f"--conf {CRCTestCase.test_conf_file} -p TEST_ITEM_ --removetestlist", "removelist2")
 
     def test_remove_and_ss(self):
         self.check_error_output(f"--conf {CRCTestCase.test_conf_file} --removetestlist -ss X", "removeerror1",
                                 multipart_test=True)
-        self.check_error_output(f"--conf {CRCTestCase.test_conf_file} -p TEST_ITEM_ --removetestlist -u 1", "removeerror2")
+        self.check_error_output(f"--conf {CRCTestCase.test_conf_file} -p TEST_ITEM_ --removetestlist -u 1",
+                                "removeerror2")
 
 
 if __name__ == '__main__':

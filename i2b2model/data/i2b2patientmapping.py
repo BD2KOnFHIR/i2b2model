@@ -21,7 +21,6 @@ class PatientIDEStatus:
     merged = PatientIDEStatusCode("M")
 
 
-
 class PatientMapping(I2B2CoreWithUploadId):
     patient_ide: Local[str]
     patient_ide_source: Local[str]

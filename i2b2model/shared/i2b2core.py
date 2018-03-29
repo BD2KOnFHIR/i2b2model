@@ -2,7 +2,7 @@ from datetime import datetime
 from operator import or_
 from typing import Optional, List, Tuple, Callable, Dict
 
-from dynprops import DynProps, Global
+from dynprops import DynProps, Global, as_dict
 from sqlalchemy import Table, and_, update, delete, select
 from sqlalchemy.engine import Connection
 
@@ -95,7 +95,7 @@ class I2B2CoreWithUploadId(I2B2Core):
             key_filter = I2B2CoreWithUploadId._nested_fcn(and_, keys)
             rec_exists = conn.execute(select([table.c.upload_id]).where(key_filter)).rowcount
             if rec_exists:
-                known_values = {k: v for k, v in record._freeze().items()
+                known_values = {k: v for k, v in as_dict(record).items()
                                 if v is not None and k not in cls._no_update_fields and
                                 k not in cls.key_fields}
                 vals = [table.c[k] != v for k, v in known_values.items()]
@@ -104,7 +104,7 @@ class I2B2CoreWithUploadId(I2B2Core):
                 upd = update(table).where(and_(key_filter, val_filter)).values(known_values)
                 num_updates += conn.execute(upd).rowcount
             else:
-                inserts.append(record._freeze())
+                inserts.append(as_dict(record))
         if inserts:
             if cls._check_dups:
                 dups = cls._check_for_dups(inserts)

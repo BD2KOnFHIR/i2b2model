@@ -24,7 +24,7 @@ class VisitDimensionSQLTestCase(unittest.TestCase):
         n_ins, n_upd = x.add_or_update_records(self.opts.tables, [x])
         self.assertEqual((0, 0), (n_upd, n_ins))
         x.end_date = datetime(2010, 2, 1)
-        x.active_status_cd.endcode = ActiveStatusCd.ed_month
+        x.active_status_cd_.endcode = ActiveStatusCd.ed_month
         y = VisitDimension(5000018, 10000017, ActiveStatusCd(ActiveStatusCd.sd_day, ActiveStatusCd.ed_year),
                            datetime(2007, 12, 9), datetime(2008, 1, 1))
 

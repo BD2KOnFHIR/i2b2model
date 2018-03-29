@@ -2,7 +2,7 @@ import unittest
 from collections import OrderedDict
 from datetime import datetime
 
-from dynprops import as_dict
+from dynprops import as_dict, clear
 
 from i2b2model.shared.i2b2core import I2B2Core
 from i2b2model.testingutils.base_test_case import BaseTestCase
@@ -10,10 +10,10 @@ from i2b2model.testingutils.base_test_case import BaseTestCase
 
 class ModifierDimensionTestCase(BaseTestCase):
     def setUp(self):
-        I2B2Core._clear()
+        clear(I2B2Core)
 
     def tearDown(self):
-        I2B2Core._clear()
+        clear(I2B2Core)
 
     def test_basics(self):
         from i2b2model.metadata.i2b2modifierdimension import ModifierDimension

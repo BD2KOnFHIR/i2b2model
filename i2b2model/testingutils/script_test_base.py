@@ -6,8 +6,6 @@ from typing import Callable, List
 
 import os
 
-from i2b2model import __version__
-
 
 class ScriptTestBase(unittest.TestCase):
     dirname = None
@@ -15,6 +13,7 @@ class ScriptTestBase(unittest.TestCase):
     tst_dir: str = None
     tst_fcn: Callable[[List[str]], bool] = None
     print_prefiltered = False
+    version = "Store expected version here"
 
     @classmethod
     def call_tst_fcn(cls, args: str):
@@ -28,7 +27,7 @@ class ScriptTestBase(unittest.TestCase):
                 outf.write(output)
         self.maxDiff = None
         with open(fullfilename) as testf:
-            test_text = re.sub(r'Version: [0-9]+\.[0-9]+\.[[0-9]+', f'Version: {__version__}', testf.read(),
+            test_text = re.sub(r'Version: [0-9]+\.[0-9]+\.[[0-9]+', f'Version: {ScriptTestBase.version}', testf.read(),
                                flags=re.MULTILINE)
             self.assertEqual(test_text, output)
         if not multipart_test:

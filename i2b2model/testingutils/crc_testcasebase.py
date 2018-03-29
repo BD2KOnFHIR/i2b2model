@@ -6,6 +6,7 @@ from functools import reduce
 
 from i2b2model.scripts.removefacts import remove_facts
 from i2b2model.shared.i2b2core import I2B2Core, I2B2CoreWithUploadId
+from dynprops import clear
 
 
 class CRCTestCaseBase(unittest.TestCase):
@@ -15,14 +16,14 @@ class CRCTestCaseBase(unittest.TestCase):
     def setUp(self):
         self.assertIsNotNone(self.test_prefix, "CRCTestCase.test_prefix must be set")
         self.assertIsNotNone(self.test_conf_file, "CRCTestCase.test_conf_file location must be set")
-        I2B2Core._clear()
-        I2B2CoreWithUploadId._clear()
+        clear(I2B2Core)
+        clear(I2B2CoreWithUploadId)
 
     def tearDown(self):
         # if getattr(self, "_sourcesystem_cd", None):
         #     remove_facts(f"--conf {self.test_conf_file} -ss {self._sourcesystem_cd}".split())
-        I2B2Core._clear()
-        I2B2CoreWithUploadId._clear()
+        clear(I2B2Core)
+        clear(I2B2CoreWithUploadId)
 
     @staticmethod
     def text_to_number(txt: str) -> int:
@@ -47,7 +48,7 @@ class CRCTestCaseBase(unittest.TestCase):
                 remove_facts(f"--conf {self.test_conf_file} -ss {self._sourcesystem_cd}".split())
                 print(f"      {self._upload_id}")
                 print(f"----- {self._sourcesystem_cd}")
-            #print(debug_output.getvalue())
+            # print(debug_output.getvalue())
             if save_ss_cd:
                 self._sourcesystem_cd = save_ss_cd
                 self._upload_id = save_up_id

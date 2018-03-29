@@ -6,10 +6,10 @@
 import os
 import sys
 
-from tests.utils.crc_testcase import test_conf_file, CRCTestCase
+from tests.utils.crc_testcase import CRCTestCase
 
 if __name__ == "__main__":
     sys.path.append(os.path.join(os.path.join(os.getcwd(), os.path.dirname(__file__)), '..'))
     from i2b2model.scripts.removefacts import remove_facts
 
-    remove_facts(f"--conf {test_conf_file} -p {CRCTestCase.test_prefix} --removetestlist".split())
+    remove_facts(f"--conf {CRCTestCase.test_conf_file} -p {CRCTestCase.test_prefix} --removetestlist".split())

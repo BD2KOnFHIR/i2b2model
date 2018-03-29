@@ -18,7 +18,7 @@ setup(
     author='Harold Solbrig',
     author_email='solbrig.harold@mayo.edu',
     packages=packages,
-    install_requires=['SQLAlchemy', 'psycopg2-binary', 'python-dateutil', 'dynprops'],
+    install_requires=['SQLAlchemy', 'psycopg2-binary', 'python-dateutil', 'dynprops>=0.1.5'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',

@@ -13,7 +13,8 @@ class Schemes(DynProps):
         self.c_name = name
         self.c_description = description
 
-    def _matches(self, d1: Dict[str, object], d2: Dict[str, object], ignore_keys: List[str]) -> bool:
+    @staticmethod
+    def _matches(d1: Dict[str, object], d2: Dict[str, object], ignore_keys: List[str]) -> bool:
         return all(d1[k] == d2[k] for k in d1.keys() if k not in ignore_keys)
 
     def exists(self, tables: I2B2Tables) -> bool:

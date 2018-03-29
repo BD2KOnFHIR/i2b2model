@@ -1,4 +1,4 @@
 SQLAlchemy
 python-dateutil
 psycopg2-binary
-dynprops>=0.1.1
+dynprops>=0.1.5

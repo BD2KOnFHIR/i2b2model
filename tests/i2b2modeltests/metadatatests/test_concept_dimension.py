@@ -2,23 +2,25 @@ import unittest
 from collections import OrderedDict
 from datetime import datetime
 
-from dynprops import as_dict, heading
+from dynprops import as_dict, heading, clear
 
-from i2b2model.shared.i2b2core import I2B2Core
+from i2b2model.shared.i2b2core import I2B2Core, I2B2CoreWithUploadId
 from i2b2model.testingutils.base_test_case import BaseTestCase
 
 
 class ConceptDimensionTestCase(BaseTestCase):
     def setUp(self):
-        I2B2Core._clear()
+        clear(I2B2Core)
+        clear(I2B2CoreWithUploadId)
 
     def tearDown(self):
-        I2B2Core._clear()
+        clear(I2B2Core)
+        clear(I2B2CoreWithUploadId)
 
     def test_basics(self):
         from i2b2model.metadata.i2b2conceptdimension import ConceptDimension
 
-        ConceptDimension._clear()
+        clear(ConceptDimension)
         I2B2Core.download_date = datetime(2017, 5, 25)
         I2B2Core.sourcesystem_cd = "TEST_SS"
         I2B2Core.import_date = datetime(2017, 5, 25)

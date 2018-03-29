@@ -9,7 +9,9 @@ from i2b2model.sqlsupport.dbconnection import I2B2Tables
 
 class VitalStatusCd:
     def __setattr__(self, key, value):
-        if key not in ["birthcode", "deathcode"]:
+        if self.locked:
+            raise ValueError("Read only VitalStatusCd")
+        if key not in ["birthcode", "deathcode", "locked"]:
             raise ValueError("New elements not allowed")
         super().__setattr__(key, value)
 
@@ -38,9 +40,11 @@ class VitalStatusCd:
     dd_minute = DeathDateCode('T')
     dd_second = DeathDateCode('S')
 
-    def __init__(self, birth: BirthDateCode, death: DeathDateCode) -> None:
+    def __init__(self, birth: BirthDateCode, death: DeathDateCode, locked=False) -> None:
+        super().__setattr__('locked', False)
         self.birthcode = birth
         self.deathcode = death
+        self.locked = locked
 
     @property
     def code(self):
@@ -49,14 +53,15 @@ class VitalStatusCd:
     def reify(self):
         return self.code
 
-unknown_vital_status_cd = VitalStatusCd(VitalStatusCd.bd_unknown, VitalStatusCd.dd_unknown)
+
+unknown_vital_status_cd = VitalStatusCd(VitalStatusCd.bd_unknown, VitalStatusCd.dd_unknown, locked=True)
+
 
 # TODO: should age be computed from birthdate / deathdate
 # TODO: language code -- what do we do with this?
-
 class PatientDimension(I2B2CoreWithUploadId):
     patient_num: Local[int]
-    vital_status_cd: Local[Optional[VitalStatusCd]]
+    vital_status_cd: Local[Optional[str]]
     birth_date: Local[Optional[datetime]]
     death_date: Local[Optional[datetime]]
     sex_cd: Local[Optional[str]]
@@ -75,7 +80,7 @@ class PatientDimension(I2B2CoreWithUploadId):
 
     def __init__(self, patient_num, vital_status_cd: Optional[VitalStatusCd]=unknown_vital_status_cd) -> None:
         self.patient_num = patient_num
-        self.vital_status_cd = vital_status_cd
+        self.vital_status_cd = VitalStatusCd(vital_status_cd.birthcode, vital_status_cd.deathcode)
 
         super().__init__()
 

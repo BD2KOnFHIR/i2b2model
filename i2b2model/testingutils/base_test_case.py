@@ -5,6 +5,7 @@ from typing import Union
 
 from dateutil.parser import parse
 
+
 class BaseTestCase(unittest.TestCase):
     @staticmethod
     def almostnow(d: Union[datetime, str]) -> bool:
