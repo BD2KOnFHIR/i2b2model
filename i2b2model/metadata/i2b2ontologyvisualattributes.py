@@ -29,7 +29,7 @@ class VisualAttributes:
             self.editable = char3 == 'E'
         else:
             self.leaf = False           # C
-            self.approximate = False    # Leaf only - multiple targets
+            self.approximate = True     # Leaf only - always approximage for non-leaf
             self.draggable = True       # Folder only
             self.concept = True         # Concept or Modifier Dimension
 

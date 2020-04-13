@@ -40,8 +40,7 @@ class _I2B2Tables:
         :param item: logical table name
         :return: physical name of table
         """
-        v = self.__dict__[item]
-        return v if v is not None else item
+        return getattr(self, item, item)
 
     def all_tables(self) -> List[str]:
         """
