@@ -16,7 +16,7 @@ class VisualAttributes:
             assert (char1 in "CFMLODR")
             self.leaf = char1 in 'LMR'
             self.approximate = not char1 == 'L'
-            self.draggable = char1 in 'FD'
+            self.draggable = char1 not in 'CO'
             self.concept = char1 in 'CFML'
 
             char2 = string_value[1]
